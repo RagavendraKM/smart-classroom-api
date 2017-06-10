@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const morgan = require('morgan');
 const log = require('winston');
+const mongoose = require('mongoose');
 
 var config = require('./config');
 var app = express();
@@ -19,6 +20,12 @@ if (config.mode === 'PROD') {
     mode = 'tiny';
     server = config.prod;
 }
+
+//mongodb://user:password@host:port/name
+mongoose.connect('mongodb://' +
+    server.database.user + ':' + server.database.password +
+    '@' + server.database.host + ':' + server.database.port +
+    '/' + server.database.name);
 
 app.use(bodyParser.urlencoded({
     extended: true

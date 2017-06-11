@@ -8,5 +8,6 @@
  * @type {Object}
  */
 module.exports = {
-    hello: require('./hello')
+    hello: require('./hello'),
+    mongodb: require('./mongodb')
 };

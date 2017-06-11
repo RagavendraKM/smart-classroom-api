@@ -12,5 +12,6 @@
  */
 module.exports = {
     hello: require('./hello'),
-    response: require('./response')
+    response: require('./response'),
+    students: require('./students')
 };

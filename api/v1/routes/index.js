@@ -5,5 +5,8 @@
  */
 module.exports = (router) => {
     require('./hello')(router);
+    require('./students')(router);
+
+    // Error middleware must remain at end
     require('./error')(router);
 };

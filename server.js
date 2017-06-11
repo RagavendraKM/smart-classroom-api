@@ -21,6 +21,7 @@ if (config.mode === 'PROD') {
     server = config.prod;
 }
 
+mongoose.Promise = global.Promise;
 //mongodb://user:password@host:port/name
 mongoose.connect('mongodb://' +
     server.database.user + ':' + server.database.password +

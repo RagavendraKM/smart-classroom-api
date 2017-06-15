@@ -1,4 +1,5 @@
 module.exports = {
     students: require('./students'),
-    goals: require('./goals')
+    goals: require('./goals'),
+    quizzes: require('./quizzes')
 };

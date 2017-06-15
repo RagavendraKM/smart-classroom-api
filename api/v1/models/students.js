@@ -5,14 +5,6 @@ var facebook = new mongoose.Schema({
         type: String,
         required: true
     },
-    name: {
-        type: String,
-        required: true
-    },
-    lastName: {
-        type: String,
-        required: true,
-    },
     profilePicture: {
         type: String,
         required: true
@@ -30,7 +22,7 @@ var activityLog = new mongoose.Schema({
         type: String,
         required: true
     },
-    progressAcquired: {
+    weight: {
         type: Number,
         required: true
     }
@@ -39,13 +31,17 @@ var activityLog = new mongoose.Schema({
 });
 
 var goal = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true
+    },
     completed: {
         type: Boolean,
         default: false
     },
     active: {
-      type: Boolean,
-      default: true
+        type: Boolean,
+        default: true
     },
     dateCompleted: {
         type: Date
@@ -53,7 +49,7 @@ var goal = new mongoose.Schema({
     dateStarted: {
         type: Date
     },
-    progress: {
+    mark: {
         type: Number,
         default: 0
     },
@@ -73,12 +69,54 @@ var goal = new mongoose.Schema({
     _id: false
 });
 
+var quiz = new mongoose.Schema({
+    questionNumber: {
+        type: Number,
+        required: true
+    },
+    answer: {
+        type: String,
+        required: true
+    }
+}, {
+    _id: false
+});
+
+var quizHistory = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    mark: {
+        type: Number,
+        default: 0
+    },
+    weight: {
+        type: Number,
+        default: 0
+    },
+    results: {
+        type: [quiz],
+        default: []
+    },
+    quiz: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Quizzes'
+    }
+}, {
+    _id: false
+});
+
 var schema = new mongoose.Schema({
     facebook: {
         type: facebook,
         required: true
     },
-    name: {
+    firstName: {
+        type: String,
+        required: true
+    },
+    firstName: {
         type: String,
         required: true
     },
@@ -88,16 +126,16 @@ var schema = new mongoose.Schema({
     birthday: {
         type: Date
     },
-    classes: [{
+    classrooms: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Classrooms'
     }],
-    goals: {
-        type: [goal],
+    quizHistory: {
+        type: [quizHistory],
         default: []
     },
-    absences: {
-        type: [Date],
+    goals: {
+        type: [goal],
         default: []
     }
 });

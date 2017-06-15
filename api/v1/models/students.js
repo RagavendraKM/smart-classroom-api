@@ -43,10 +43,10 @@ var goal = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    dateCompleted: {
+    completionDate: {
         type: Date
     },
-    dateStarted: {
+    startDate: {
         type: Date
     },
     mark: {

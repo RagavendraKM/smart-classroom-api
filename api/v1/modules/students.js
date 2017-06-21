@@ -20,8 +20,28 @@ module.exports = {
                 next(err);
                 return;
             }
-            log.info('Successfully created student');
+            log.info('Successfully created student.');
             res.locals = result;
+            next();
+        });
+    },
+    /**
+     * Gets all students
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    getAll: (req, res, next) => {
+        log.info('Module - getAll Students');
+        ctrls.mongodb.find(models.students, {}, (err, results) => {
+            if (err) {
+                let err = new Error('Oops something went wrong!');
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found all students.');
+            res.locals = results;
             next();
         });
     }

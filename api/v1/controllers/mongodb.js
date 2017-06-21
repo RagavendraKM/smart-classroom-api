@@ -9,6 +9,9 @@ module.exports = {
      */
     find: (model, criteria, callback) => {
         try {
+            log.info('Searching Mongo DB');
+            log.debug('Criteria:');
+            log.debug(criteria);
             model.find(criteria).exec((err, results) => {
                 if (err) {
                     // Catches Mongo DB errors
@@ -16,6 +19,8 @@ module.exports = {
                     callback(err);
                     return;
                 }
+                log.info('Finished searching Mongo DB');
+                log.debug(results);
                 callback(null, results);
             });
         } catch (error) {

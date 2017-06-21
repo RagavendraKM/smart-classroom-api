@@ -4,6 +4,7 @@ const path = require('path');
 const morgan = require('morgan');
 const log = require('winston');
 const mongoose = require('mongoose');
+const cfenv = require('cfenv');
 
 var config = require('./config');
 var app = express();
@@ -16,9 +17,12 @@ log.add(log.transports.File, {
 });
 
 if (config.mode === 'PROD') {
+    var cf = cfenv.getAppEnv();
     log.remove(log.transports.Console);
     mode = 'tiny';
     server = config.prod;
+    server.port = (cf.port) ? cf.port : server.port;
+    server.host = (cf.bind) ? cf.bind : server.host;
 }
 
 mongoose.Promise = global.Promise;

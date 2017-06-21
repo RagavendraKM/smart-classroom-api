@@ -25,6 +25,10 @@ var activityLog = new mongoose.Schema({
     weight: {
         type: Number,
         required: [true, 'weight is a required parameter!']
+    },
+    mark: {
+        type: Number,
+        required: [true, 'mark is a required parameter!']
     }
 }, {
     _id: false

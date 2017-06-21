@@ -283,11 +283,22 @@ module.exports = {
 
             // TODO: Optimize the search?
             log.info('Searching for student goal [' + req.params.goalId + ']');
-            for (var i = 0; i < result.goals.length; i++) {
+            for (let i = 0; i < result.goals.length; i++) {
                 // Safe comparison of mongo DB ids
                 if (String(result.goals[i]._id) === String(req.params.goalId)) {
+                    // Re-calculate mark
+                    let mark = req.body.mark * req.body.weight;
+                    for (let j = 0; j < result.goals[i].activityLog.length; j++) {
+                        mark += result.goals[i].activityLog[j].mark * result.goals[i].activityLog[j].weight;
+                    }
+
+                    // Update activity log
                     log.info('Updating student goal [' + req.params.goalId + '] with activity log entry');
                     result.goals[i].activityLog.push(req.body);
+
+                    // Update goal mark
+                    log.info('Updating goal progress');
+                    result.goals[i].mark = mark;
                     break;
                 }
             }

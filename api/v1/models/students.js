@@ -18,12 +18,12 @@ var validate = {
 var facebook = new mongoose.Schema({
     id: {
         type: String,
-        required: [true, 'id is a required parameter!'],
+        required: [true, 'id is a required field!'],
         unique: [true, 'id must be unique']
     },
     profilePicture: {
         type: String,
-        required: [true, 'profilePicture is a required parameter!']
+        required: [true, 'profilePicture is a required field!']
     }
 }, {
     _id: false
@@ -32,20 +32,20 @@ var facebook = new mongoose.Schema({
 var activityLog = new mongoose.Schema({
     date: {
         type: Date,
-        required: [true, 'date is a required parameter!']
+        required: [true, 'date is a required field!']
     },
     log: {
         type: String,
-        required: [true, 'log is a required parameter!']
+        required: [true, 'log is a required field!']
     },
     weight: {
         type: Number,
-        required: [true, 'weight is a required parameter!'],
+        required: [true, 'weight is a required field!'],
         validate: validate.strictNumber
     },
     mark: {
         type: Number,
-        required: [true, 'mark is a required parameter!'],
+        required: [true, 'mark is a required field!'],
         validate: validate.strictNumber
     }
 }, {
@@ -55,7 +55,7 @@ var activityLog = new mongoose.Schema({
 var goal = new mongoose.Schema({
     title: {
         type: String,
-        required: [true, 'title is a required parameter!']
+        required: [true, 'title is a required field!']
     },
     completed: {
         type: Boolean,
@@ -93,11 +93,11 @@ var goal = new mongoose.Schema({
 var quiz = new mongoose.Schema({
     questionNumber: {
         type: Number,
-        required: [true, 'questionNumber is a required parameter!']
+        required: [true, 'questionNumber is a required field!']
     },
     answer: {
         type: String,
-        required: [true, 'answer is a required parameter!']
+        required: [true, 'answer is a required field!']
     }
 }, {
     _id: false
@@ -106,7 +106,7 @@ var quiz = new mongoose.Schema({
 var quizHistory = new mongoose.Schema({
     title: {
         type: String,
-        required: [true, 'title is a required parameter!']
+        required: [true, 'title is a required field!']
     },
     mark: {
         type: Number,
@@ -131,17 +131,17 @@ var quizHistory = new mongoose.Schema({
 var schema = new mongoose.Schema({
     facebook: {
         type: facebook,
-        required: [true, 'facebook is a required parameter!']
+        required: [true, 'facebook is a required field!']
     },
     firstName: {
         type: String,
         required: true,
-        required: [true, 'firstName is a required parameter!'],
+        required: [true, 'firstName is a required field!'],
         validate: validate.alphaNumeric
     },
     lastName: {
         type: String,
-        required: [true, 'lastName is a required parameter!'],
+        required: [true, 'lastName is a required field!'],
         validate: validate.alphaNumeric
     },
     displayName: {

@@ -210,5 +210,101 @@ module.exports = {
                 next();
             });
         });
+    },
+    /**
+     * Validates an activity log entry for a student goal
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    valdiateActivityLog: (req, res, next) => {
+        log.info('Module - ValdiateActivityLog Student');
+
+        log.info('Validating goal id...');
+        if (!req.params.goalId) {
+            log.error('Goal ID validation failed');
+            let err = new Error('Missing required goal id parameter in the request path.');
+            err.status = 400;
+            next(err);
+            return;
+        }
+
+        if (!ctrls.mongodb.isObjectId(req.params.goalId)) {
+            log.error('Goal ID validation failed');
+            let err = new Error('Invalid goal id parameter in the request path.');
+            err.status = 400;
+            next(err);
+            return;
+        }
+
+        // Validate schema
+        log.info('Validating student goal...');
+        let fakeStudent = new models.students({
+            goals: [{
+                title: 'fake',
+                activityLog: [req.body]
+            }]
+        });
+
+        let student = new models.students(fakeStudent);
+        let error = student.validateSync();
+
+        // TODO: potentially change this as it may be confusing to consumer
+        if (error.errors['goals'] && error.errors['goals']['errors']) {
+            log.error('Student goal activity log validation failed!');
+            let err = new Error('Student Goal Activity Log Validation Failed!');
+            err.status = 400;
+            // Remove stack trace but retain detailed description of validation errors
+            err.data = JSON.parse(JSON.stringify(error.errors['goals']['errors']));
+            next(err);
+            return;
+        }
+
+        log.info('Student goal activity log has been validated!');
+        next();
+    },
+    /**
+     * Updates a student's goal's activity log
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     * @return {object}        Populates res.locals with student model
+     */
+    updateGoalActivityLog: (req, res, next) => {
+        log.info('Module - UpdateGoalActivityLog Student');
+        ctrls.mongodb.findById(models.students, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Failed getting student!');
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found student [' + req.params.id + ']');
+
+            // TODO: Optimize the search?
+            log.info('Searching for student goal [' + req.params.goalId + ']');
+            for (var i = 0; i < result.goals.length; i++) {
+                // Safe comparison of mongo DB ids
+                if (String(result.goals[i]._id) === String(req.params.goalId)) {
+                    log.info('Updating student goal [' + req.params.goalId + '] with activity log entry');
+                    result.goals[i].activityLog.push(req.body);
+                    break;
+                }
+            }
+
+            ctrls.mongodb.save(result, (err, _result) => {
+                if (err) {
+                    let err = new Error('Failed updating student goal activity log!');
+                    err.status = 500;
+                    next(err);
+                    return;
+                }
+
+                log.info('Successfully updated student goal activity log for student [' + req.params.id + ']');
+
+                res.locals = _result;
+                next();
+            });
+        });
     }
 };

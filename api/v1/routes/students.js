@@ -41,6 +41,15 @@ module.exports = (router) => {
         modules.students.createGoal,
         modules.response);
 
+    log.info('Initializing Route PUT /students/:goalId/goals/:id');
+    router.put('/students/:id/goals/:goalId/activityLogs',
+        modules.verify.body,
+        modules.verify.params,
+        modules.students.validatePathId,
+        modules.students.valdiateActivityLog,
+        modules.students.updateGoalActivityLog,
+        modules.response);
 
-    // TODO: PUT /students/:id/goals/:id
+    //TODO: /students/:id/quizzes
+    //TODO: /students/:id/quizzes/:id/results
 };

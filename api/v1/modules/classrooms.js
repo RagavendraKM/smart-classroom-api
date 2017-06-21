@@ -40,15 +40,60 @@ module.exports = {
     create: (req, res, next) => {
         log.info('Module - Create Classroom');
         var classroom = new models.classrooms(req.body);
-        ctrls.mongodb.save(classroom, (err, result) => {
+        ctrls.mongodb.save(classroom, (err, classroomData) => {
             if (err) {
                 let err = new Error('Failed creating classroom!');
                 err.status = 500;
                 next(err);
                 return;
             }
+            ctrls.mongodb.findById(models.teachers, classroomData.teacher, (err, teacherData) => {
+                //TODO: figure out how to properly handle error
+                if (err) {
+                    log.error('Failled adding classroom to teacher [' + classroomData.teacher + ']');
+                    return;
+                }
+                log.info('Successfully found teacher [' + classroomData.teacher + ']');
+
+                log.info('Adding classroom to teacher');
+                teacherData.classrooms.push(classroomData._id);
+
+                ctrls.mongodb.save(teacherData, (err, _result) => {
+                    //TODO: figure out how to properly handle error
+                    if (err) {
+                        log.error('Failled adding classroom to teacher [' + classroomData.teacher + ']');
+                        return;
+                    }
+                    log.info('Successfully added teacher to classroom');
+                });
+            });
+
+            for (let i = 0; i < classroomData.students.length; i++) {
+                ctrls.mongodb.findById(models.students, classroomData.students[i], (err, studentData) => {
+                    //TODO: figure out how to properly handle error
+                    if (err) {
+                        log.error('Failled adding classroom to student [' + classroomData.students[i] + ']');
+                        return;
+                    }
+                    log.info('Successfully found student [' + classroomData.students[i] + ']');
+
+                    log.info('Adding classroom to student');
+                    studentData.classrooms.push(classroomData._id);
+
+                    ctrls.mongodb.save(studentData, (err, _result) => {
+                        //TODO: figure out how to properly handle error
+                        if (err) {
+                            log.error('Failled adding classroom to student [' + classroomData.students[i] + ']');
+                            return;
+                        }
+
+                        log.info('Successfully added student [' + classroomData.students[i] + '] to classroom');
+                    });
+                });
+            }
+
             log.info('Successfully created classroom');
-            res.locals = result;
+            res.locals = classroomData;
             next();
         });
     },

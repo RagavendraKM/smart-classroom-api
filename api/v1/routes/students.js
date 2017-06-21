@@ -32,8 +32,8 @@ module.exports = (router) => {
         modules.students.deleteOne,
         modules.response);
 
-    log.info('Initializing Route PUT /students/:id/goals');
-    router.put('/students/:id/goals',
+    log.info('Initializing Route POST /students/:id/goals');
+    router.post('/students/:id/goals',
         modules.verify.body,
         modules.verify.params,
         modules.students.validatePathId,
@@ -42,7 +42,7 @@ module.exports = (router) => {
         modules.response);
 
     log.info('Initializing Route PUT /students/:goalId/goals/:id');
-    router.put('/students/:id/goals/:goalId/activityLogs',
+    router.post('/students/:id/goals/:goalId/activityLogs',
         modules.verify.body,
         modules.verify.params,
         modules.students.validatePathId,

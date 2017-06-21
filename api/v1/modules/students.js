@@ -42,7 +42,7 @@ module.exports = {
         var student = new models.students(req.body);
         ctrls.mongodb.save(student, (err, result) => {
             if (err) {
-                let err = new Error('Creation of student failed!');
+                let err = new Error('Failed creating student!');
                 err.status = 500;
                 next(err);
                 return;
@@ -113,7 +113,7 @@ module.exports = {
         log.info('Module - GetOne Student');
         ctrls.mongodb.findById(models.students, req.params.id, (err, result) => {
             if (err) {
-                let err = new Error('Oops something went wrong!');
+                let err = new Error('Failed getting student: ' + req.params.id);
                 err.status = 500;
                 next(err);
                 return;
@@ -134,7 +134,7 @@ module.exports = {
         log.info('Module - DeleteOne Student');
         ctrls.mongodb.findByIdAndRemove(models.students, req.params.id, (err, result) => {
             if (err) {
-                let err = new Error('Oops something went wrong!');
+                let err = new Error('Failed deleting student: ' + req.params.id);
                 err.status = 500;
                 next(err);
                 return;

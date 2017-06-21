@@ -41,7 +41,7 @@ module.exports = (router) => {
         modules.students.createGoal,
         modules.response);
 
-    log.info('Initializing Route PUT /students/:goalId/goals/:id');
+    log.info('Initializing Route POST /students/:goalId/goals/:id');
     router.post('/students/:id/goals/:goalId/activityLogs',
         modules.verify.body,
         modules.verify.params,

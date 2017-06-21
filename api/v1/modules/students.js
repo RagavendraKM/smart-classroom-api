@@ -255,7 +255,10 @@ module.exports = {
             let err = new Error('Student Goal Activity Log Validation Failed!');
             err.status = 400;
             // Remove stack trace but retain detailed description of validation errors
-            err.data = JSON.parse(JSON.stringify(error.errors['goals']['errors']));
+            for (var obj in error.errors['goals']['errors']) {
+                err.data = JSON.parse(JSON.stringify(error.errors['goals']['errors'][obj]));
+                break;
+            }
             next(err);
             return;
         }

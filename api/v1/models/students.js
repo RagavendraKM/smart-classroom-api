@@ -1,9 +1,25 @@
 const mongoose = require('mongoose');
 
+var validate = {
+    alphaNumeric: {
+        validator: function(v) {
+            return /^[a-zA-Z0-9-_ ]*$/.test(v);
+        },
+        message: 'Only alpha-numeric values are accepted!'
+    },
+    strictNumber: {
+      validator: function(v) {
+          return !isNaN(parseFloat(v)) && isFinite(v);
+      },
+      message: 'This feild must be a number!'
+    }
+};
+
 var facebook = new mongoose.Schema({
     id: {
         type: String,
-        required: [true, 'id is a required parameter!']
+        required: [true, 'id is a required parameter!'],
+        unique: [true, 'id must be unique']
     },
     profilePicture: {
         type: String,
@@ -24,11 +40,13 @@ var activityLog = new mongoose.Schema({
     },
     weight: {
         type: Number,
-        required: [true, 'weight is a required parameter!']
+        required: [true, 'weight is a required parameter!'],
+        validate: validate.strictNumber
     },
     mark: {
         type: Number,
-        required: [true, 'mark is a required parameter!']
+        required: [true, 'mark is a required parameter!'],
+        validate: validate.strictNumber
     }
 }, {
     _id: false
@@ -55,7 +73,8 @@ var goal = new mongoose.Schema({
     },
     mark: {
         type: Number,
-        default: 0
+        default: 0,
+        validate: validate.strictNumber
     },
     classroom: {
         type: mongoose.Schema.Types.ObjectId,
@@ -91,11 +110,13 @@ var quizHistory = new mongoose.Schema({
     },
     mark: {
         type: Number,
-        default: 0
+        default: 0,
+        validate: validate.strictNumber
     },
     weight: {
         type: Number,
-        default: 0
+        default: 0,
+        validate: validate.strictNumber
     },
     results: {
         type: [quiz],
@@ -105,8 +126,6 @@ var quizHistory = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Quizzes'
     }
-}, {
-    _id: false
 });
 
 var schema = new mongoose.Schema({
@@ -117,11 +136,13 @@ var schema = new mongoose.Schema({
     firstName: {
         type: String,
         required: true,
-        required: [true, 'firstName is a required parameter!']
+        required: [true, 'firstName is a required parameter!'],
+        validate: validate.alphaNumeric
     },
     lastName: {
         type: String,
-        required: [true, 'lastName is a required parameter!']
+        required: [true, 'lastName is a required parameter!'],
+        validate: validate.alphaNumeric
     },
     displayName: {
         type: String

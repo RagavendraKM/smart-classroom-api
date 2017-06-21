@@ -2,9 +2,61 @@ const log = require('winston');
 
 module.exports = {
     /**
-     * Finds one document in Mongo DB based on ID
+     * Finds one document in Mongo DB based on _id and deletes it
+     * @param  {object}   model    Mongoose Model
+     * @param  {String}   id       Mongo DB id
+     * @param  {Function} callback JavaScript Callback
+     */
+    findByIdAndRemove: (model, id, callback) => {
+        try {
+            log.info('[findOneAndRemove] Searching Mongo DB for ' + id);
+            model.findByIdAndRemove(id).exec((err, result) => {
+                if (err) {
+                    // Catches Mongo DB errors
+                    log.error('[findByIdAndRemove] Mongo DB failed!', err);
+                    callback(err);
+                    return;
+                }
+                log.info('[findByIdAndRemove] Finished searching Mongo DB.');
+                log.debug(result);
+                callback(null, result);
+            });
+        } catch (error) {
+            // Catches execution errors
+            log.error('Mongoose execution of [findByIdAndRemove] failed', error);
+            callback(error);
+        }
+    },
+    /**
+     * Finds one document in Mongo DB based on _id and deletes it
      * @param  {object}   model    Mongoose Model
      * @param  {object}   criteria Search criteria
+     * @param  {Function} callback JavaScript Callback
+     */
+    findOneAndRemove: (model, criteria, callback) => {
+        try {
+            log.info('[findOneAndRemove] Searching Mongo DB for ' + id);
+            model.findOneAndRemove(criteria).exec((err, result) => {
+                if (err) {
+                    // Catches Mongo DB errors
+                    log.error('[findOneAndRemove] Mongo DB failed!', err);
+                    callback(err);
+                    return;
+                }
+                log.info('[findOneAndRemove] Finished searching Mongo DB.');
+                log.debug(result);
+                callback(null, result);
+            });
+        } catch (error) {
+            // Catches execution errors
+            log.error('Mongoose execution of [findOneAndRemove] failed', error);
+            callback(error);
+        }
+    },
+    /**
+     * Finds one document in Mongo DB based on _id
+     * @param  {object}   model    Mongoose Model
+     * @param  {String}   id       Mongo DB id
      * @param  {Function} callback JavaScript Callback
      */
     findById: (model, id, callback) => {

@@ -20,6 +20,10 @@ module.exports = (router) => {
         modules.students.getOne,
         modules.response);
 
+    router.delete('/students/:id',
+        modules.students.deleteOne,
+        modules.response);
+
     // TODO: GET /students/:id
     // TODO: DELETE /students/:id
     // TODO: PUT /students/:id/goals

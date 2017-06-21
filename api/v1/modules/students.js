@@ -47,7 +47,7 @@ module.exports = {
         });
     },
     /**
-     * Gets all students
+     * Gets a student
      * @param  {object}   req  Request object
      * @param  {object}   res  Response object
      * @param  {Function} next Callback function to move on to the next middleware
@@ -63,6 +63,27 @@ module.exports = {
                 return;
             }
             log.info('Successfully found student [' + req.params.id + ']');
+            res.locals = result;
+            next();
+        });
+    },
+    /**
+     * Deletes a student
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     * @return {object}        Populates res.locals with deletion result
+     */
+    deleteOne: (req, res, next) => {
+        log.info('Module - GetOne Student');
+        ctrls.mongodb.findByIdAndRemove(models.students, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Oops something went wrong!');
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully deleted student [' + req.params.id + ']');
             res.locals = result;
             next();
         });

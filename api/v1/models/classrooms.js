@@ -2,18 +2,19 @@ const mongoose = require('mongoose');
 var schema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: [true, 'title is a required field']
     },
     description: {
         type: String,
         default: ''
     },
     courseCode: {
-        type: String
+        type: String,
+        default: ''
     },
     year: {
         type: Number,
-        required: true
+        required: [true, 'year is a required field']
     },
     level: {
         type: String,
@@ -21,16 +22,18 @@ var schema = new mongoose.Schema({
     },
     students: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Students'
+        ref: 'Students',
+        default: []
     }],
     teacher: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Teachers',
-        required: true
+        required: [true, 'teacher is a required field']
     },
     quizHistory: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Quizzes'
+        ref: 'Quizzes',
+        default: []
     }],
 });
 module.exports = mongoose.model('Classrooms', schema);

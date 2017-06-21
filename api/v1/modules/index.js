@@ -17,5 +17,6 @@ module.exports = {
     teachers: require('./teachers'),
     goals: require('./goals'),
     quizzes: require('./quizzes'),
+    classrooms: require('./classrooms'),
     verify: require('./verify')
 };

@@ -51,5 +51,97 @@ module.exports = {
             res.locals = result;
             next();
         });
-    }
+    },
+    /**
+     * Gets all classrooms
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     * @return {object}        Populates res.locals with array of all classrooms documents
+     */
+    getAll: (req, res, next) => {
+        log.info('Module - GetAll Classrooms');
+        ctrls.mongodb.find(models.classrooms, {}, (err, results) => {
+            if (err) {
+                let err = new Error('Failed getting all classrooms!');
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found all classrooms.');
+            res.locals = results;
+            next();
+        });
+    },
+    /**
+     * Validates path id parameter
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    validatePathId: (req, res, next) => {
+        log.info('Module - validatePathId Classrooms');
+
+        log.info('Validating request...');
+        if (!req.params.id) {
+            log.error('Request validation failed');
+            let err = new Error('Missing required id parameter in the request path. (/classrooms/:id)');
+            err.status = 400;
+            next(err);
+            return;
+        }
+
+        if (!ctrls.mongodb.isObjectId(req.params.id)) {
+            log.error('Request validation failed');
+            let err = new Error('Invalid id parameter in the request path.');
+            err.status = 400;
+            next(err);
+            return;
+        }
+
+        log.info('Request validated!');
+        next();
+    },
+    /**
+     * Gets a classroom
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     * @return {object}        Populates res.locals with classroom document
+     */
+    getOne: (req, res, next) => {
+        log.info('Module - GetOne Classroom');
+        ctrls.mongodb.findById(models.classrooms, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Failed getting classroom: ' + req.params.id);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found classroom [' + req.params.id + ']');
+            res.locals = result;
+            next();
+        });
+    },
+    /**
+     * Deletes a classroom
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     * @return {object}        Populates res.locals with deletion result
+     */
+    deleteOne: (req, res, next) => {
+        log.info('Module - DeleteOne Classrooms');
+        ctrls.mongodb.findByIdAndRemove(models.classrooms, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Failed deleting classroom: ' + req.params.id);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully deleted classroom [' + req.params.id + ']');
+            res.locals = result;
+            next();
+        });
+    },
 };

@@ -13,6 +13,22 @@ module.exports = (router) => {
         modules.classrooms.create,
         modules.response);
 
-    // TODO: GET /classrooms/:id
-    // TODO: DELETE /classrooms/:id
+    log.info('Initializing Route GET /classrooms');
+    router.get('/classrooms',
+        modules.classrooms.getAll,
+        modules.response);
+
+    log.info('Initializing Route GET /classrooms/:id');
+    router.get('/classrooms/:id',
+        modules.verify.params,
+        modules.classrooms.validatePathId,
+        modules.classrooms.getOne,
+        modules.response);
+
+    log.info('Initializing Route DELETE /classrooms/:id');
+    router.delete('/classrooms/:id',
+        modules.verify.params,
+        modules.classrooms.validatePathId,
+        modules.classrooms.deleteOne,
+        modules.response);
 };

@@ -1,13 +1,23 @@
 const mongoose = require('mongoose');
 
+var validate = {
+    alphaNumeric: {
+        validator: (v) => {
+            return /^[a-zA-Z0-9-_ ]*$/.test(v);
+        },
+        message: 'Only alpha-numeric values are accepted!'
+    }
+};
+
 var facebook = new mongoose.Schema({
     id: {
         type: String,
-        required: true
+        required: [true, 'id is a required field!'],
+        unique: [true, 'id must be unique']
     },
     profilePicture: {
         type: String,
-        required: true
+        required: [true, 'profilePicture is a required field!']
     }
 }, {
     _id: false
@@ -16,15 +26,17 @@ var facebook = new mongoose.Schema({
 var schema = new mongoose.Schema({
     facebook: {
         type: facebook,
-        required: true
+        required: [true, 'facebook is a required field!']
     },
     firstName: {
         type: String,
-        required: true
+        required: [true, 'firstName is a required field!'],
+        validate: validate.alphaNumeric
     },
     lastName: {
         type: String,
-        required: true
+        required: [true, 'lastName is a required field!'],
+        validate: validate.alphaNumeric
     },
     displayName: {
         type: String

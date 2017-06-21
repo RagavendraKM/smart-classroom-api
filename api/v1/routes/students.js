@@ -16,6 +16,10 @@ module.exports = (router) => {
         modules.students.getAll,
         modules.response);
 
+    router.get('/students/:id',
+        modules.students.getOne,
+        modules.response);
+
     // TODO: GET /students/:id
     // TODO: DELETE /students/:id
     // TODO: PUT /students/:id/goals

@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 
 var validate = {
     alphaNumeric: {
-        validator: function(v) {
+        validator: (v) => {
             return /^[a-zA-Z0-9-_ ]*$/.test(v);
         },
         message: 'Only alpha-numeric values are accepted!'
     },
     strictNumber: {
-      validator: function(v) {
-          return !isNaN(parseFloat(v)) && isFinite(v);
-      },
-      message: 'This feild must be a number!'
+        validator: (v) => {
+            return !isNaN(parseFloat(v)) && isFinite(v);
+        },
+        message: 'This feild must be a number!'
     }
 };
 

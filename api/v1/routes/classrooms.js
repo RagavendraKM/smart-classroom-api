@@ -31,4 +31,6 @@ module.exports = (router) => {
         modules.classrooms.validatePathId,
         modules.classrooms.deleteOne,
         modules.response);
+
+    // TODO: POST /classrooms/:id/quizzes/:id
 };

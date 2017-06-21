@@ -50,6 +50,9 @@ module.exports = (router) => {
         modules.students.updateGoalActivityLog,
         modules.response);
 
-    //TODO: /students/:id/quizzes
-    //TODO: /students/:id/quizzes/:id/results
+    // TODO: DELETE /students/:id/goals/:goalId
+    // TODO: POST /students/:id/quizzes
+    // TODO: POST /students/:id/quizzes/:quizId/results
+    // TODO: POST /students/:id/classrooms/:classroomId
+    // TODO: DELETE /students/:id/classrooms/:classroomId
 };

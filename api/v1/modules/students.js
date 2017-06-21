@@ -145,6 +145,37 @@ module.exports = {
         });
     },
     /**
+     * Validates a goal for a student
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    validateGoal: (req, res, next) => {
+        log.info('Module - ValidateGoal Student');
+
+        // Validate schema
+        log.info('Validating student goal...');
+        let fakeStudent = new models.students({
+            goals: [req.body]
+        });
+
+        let student = new models.students(fakeStudent);
+        let error = student.validateSync();
+
+        if (error.errors['goals']) {
+            log.error('Student goal validation failed!');
+            let err = new Error('Student Goal Validation Failed!');
+            err.status = 400;
+            // Remove stack trace but retain detailed description of validation errors
+            err.data = JSON.parse(JSON.stringify(error.errors['goals']));
+            next(err);
+            return;
+        }
+
+        log.info('Student goal has been validated!');
+        next();
+    },
+    /**
      * Creates a goal for a student
      * @param  {object}   req  Request object
      * @param  {object}   res  Response object

@@ -37,7 +37,7 @@ module.exports = (router) => {
         modules.verify.body,
         modules.verify.params,
         modules.students.validatePathId,
-        //TODO: validate createGaol
+        modules.students.validateGoal,
         modules.students.createGoal,
         modules.response);
 

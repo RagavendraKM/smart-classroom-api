@@ -32,5 +32,15 @@ module.exports = (router) => {
         modules.students.deleteOne,
         modules.response);
 
-    // TODO: PUT /students/:id/goals
+    log.info('Initializing Route PUT /students/:id/goals');
+    router.put('/students/:id/goals',
+        modules.verify.body,
+        modules.verify.params,
+        modules.students.validatePathId,
+        //TODO: validate createGaol
+        modules.students.createGoal,
+        modules.response);
+
+
+    // TODO: PUT /students/:id/goals/:id
 };

@@ -143,5 +143,41 @@ module.exports = {
             res.locals = result;
             next();
         });
+    },
+    /**
+     * Creates a goal for a student
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     * @return {object}        Populates res.locals with student model
+     */
+    createGoal: (req, res, next) => {
+        log.info('Module - CreateGoal Student');
+        ctrls.mongodb.findById(models.students, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Failed getting student!');
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found student [' + req.params.id + ']');
+
+            log.info('Creating student goal');
+            result.goals.push(req.body);
+
+            ctrls.mongodb.save(result, (err, _result) => {
+                if (err) {
+                    let err = new Error('Failed creating student goal!');
+                    err.status = 500;
+                    next(err);
+                    return;
+                }
+
+                log.info('Successfully created goal for student [' + req.params.id + ']');
+
+                res.locals = _result;
+                next();
+            });
+        });
     }
 };

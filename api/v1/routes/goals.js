@@ -13,6 +13,11 @@ module.exports = (router) => {
         modules.goals.create,
         modules.response);
 
+    log.info('Initializing Route GET /goals');
+    router.get('/goals',
+        modules.goals.getAll,
+        modules.response);
+
     // TODO: GET /goals/:id
     // TODO: DELETE /goals/:id
 };

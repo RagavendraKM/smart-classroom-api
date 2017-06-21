@@ -38,7 +38,7 @@ module.exports = {
      * @return {object}        Populates res.locals with newly created goal document
      */
     create: (req, res, next) => {
-        log.info('Module - Create goal');
+        log.info('Module - Create Goal');
         var goal = new models.goals(req.body);
         ctrls.mongodb.save(goal, (err, result) => {
             if (err) {
@@ -51,5 +51,26 @@ module.exports = {
             res.locals = result;
             next();
         });
-    }
+    },
+    /**
+     * Gets all goals
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     * @return {object}        Populates res.locals with array of all goal documents
+     */
+    getAll: (req, res, next) => {
+        log.info('Module - GetAll Goals');
+        ctrls.mongodb.find(models.goals, {}, (err, results) => {
+            if (err) {
+                let err = new Error('Failed getting all goals!');
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found all goals.');
+            res.locals = results;
+            next();
+        });
+    },
 };

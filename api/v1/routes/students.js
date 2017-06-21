@@ -8,23 +8,25 @@ var modules = require('../modules');
 module.exports = (router) => {
     log.info('Initializing Route POST /students');
     router.post('/students',
-        // TODO: Request validation
+        modules.verify.body,
+        modules.students.validateCreate,
         modules.students.create,
         modules.response);
 
+    log.info('Initializing Route GET /students');
     router.get('/students',
         modules.students.getAll,
         modules.response);
 
+    log.info('Initializing Route GET /students/:id');
     router.get('/students/:id',
         modules.students.getOne,
         modules.response);
 
+    log.info('Initializing Route DELETE /students/:id');
     router.delete('/students/:id',
         modules.students.deleteOne,
         modules.response);
 
-    // TODO: GET /students/:id
-    // TODO: DELETE /students/:id
     // TODO: PUT /students/:id/goals
 };

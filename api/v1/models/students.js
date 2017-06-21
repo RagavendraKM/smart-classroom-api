@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 var facebook = new mongoose.Schema({
     id: {
         type: String,
-        required: true
+        required: [true, 'id is a required parameter!']
     },
     profilePicture: {
         type: String,
-        required: true
+        required: [true, 'profilePicture is a required parameter!']
     }
 }, {
     _id: false
@@ -16,15 +16,15 @@ var facebook = new mongoose.Schema({
 var activityLog = new mongoose.Schema({
     date: {
         type: Date,
-        required: true
+        required: [true, 'date is a required parameter!']
     },
     log: {
         type: String,
-        required: true
+        required: [true, 'log is a required parameter!']
     },
     weight: {
         type: Number,
-        required: true
+        required: [true, 'weight is a required parameter!']
     }
 }, {
     _id: false
@@ -33,7 +33,7 @@ var activityLog = new mongoose.Schema({
 var goal = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: [true, 'title is a required parameter!']
     },
     completed: {
         type: Boolean,
@@ -72,11 +72,11 @@ var goal = new mongoose.Schema({
 var quiz = new mongoose.Schema({
     questionNumber: {
         type: Number,
-        required: true
+        required: [true, 'questionNumber is a required parameter!']
     },
     answer: {
         type: String,
-        required: true
+        required: [true, 'answer is a required parameter!']
     }
 }, {
     _id: false
@@ -85,7 +85,7 @@ var quiz = new mongoose.Schema({
 var quizHistory = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: [true, 'title is a required parameter!']
     },
     mark: {
         type: Number,
@@ -110,15 +110,16 @@ var quizHistory = new mongoose.Schema({
 var schema = new mongoose.Schema({
     facebook: {
         type: facebook,
-        required: true
+        required: [true, 'facebook is a required parameter!']
     },
     firstName: {
         type: String,
-        required: true
+        required: true,
+        required: [true, 'firstName is a required parameter!']
     },
     lastName: {
         type: String,
-        required: true
+        required: [true, 'lastName is a required parameter!']
     },
     displayName: {
         type: String

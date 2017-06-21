@@ -1,6 +1,15 @@
 const log = require('winston');
+const mongoose = require('mongoose');
 
 module.exports = {
+    /**
+     * Checks if id is a valid Mongo DB _id
+     * @param  {String}  id ID string
+     * @return {Boolean}    true/false depending on weither or not the id is valid
+     */
+    isObjectId: (id) => {
+        return mongoose.Types.ObjectId.isValid(id);
+    },
     /**
      * Finds one document in Mongo DB based on _id and deletes it
      * @param  {object}   model    Mongoose Model

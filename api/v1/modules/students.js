@@ -13,10 +13,12 @@ module.exports = {
         log.info('Module - ValidateCreate Student');
 
         // Validate schema
+        log.info('Validating student model...')
         var student = new models.students(req.body);
         var error = student.validateSync();
 
         if (error) {
+            log.error('Student model validation failed!');
             let err = new Error('Student Validation Failed!');
             err.status = 400;
             // Remove stack trace but retain detailed description of validation errors
@@ -25,6 +27,7 @@ module.exports = {
             return;
         }
 
+        log.info('Student model has been validated!');
         next();
     },
     /**
@@ -60,7 +63,7 @@ module.exports = {
         log.info('Module - GetAll Students');
         ctrls.mongodb.find(models.students, {}, (err, results) => {
             if (err) {
-                let err = new Error('Oops something went wrong!');
+                let err = new Error('Failed getting all students!');
                 err.status = 500;
                 next(err);
                 return;
@@ -69,6 +72,35 @@ module.exports = {
             res.locals = results;
             next();
         });
+    },
+    /**
+     * Validates path id parameter
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    validatePathId: (req, res, next) => {
+        log.info('Module - validatePathId Student');
+
+        log.info('Validating request...');
+        if (!req.params.id) {
+            log.error('Request validation failed');
+            let err = new Error('Missing required id parameter in the request path. (/students/:id)');
+            err.status = 400;
+            next(err);
+            return;
+        }
+
+        if (!ctrls.mongodb.isObjectId(req.params.id)) {
+            log.error('Request validation failed');
+            let err = new Error('Invalid id parameter in the request path.');
+            err.status = 400;
+            next(err);
+            return;
+        }
+
+        log.info('Request validated!');
+        next();
     },
     /**
      * Gets a student

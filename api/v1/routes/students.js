@@ -20,11 +20,15 @@ module.exports = (router) => {
 
     log.info('Initializing Route GET /students/:id');
     router.get('/students/:id',
+        modules.verify.params,
+        modules.students.validatePathId,
         modules.students.getOne,
         modules.response);
 
     log.info('Initializing Route DELETE /students/:id');
     router.delete('/students/:id',
+        modules.verify.params,
+        modules.students.validatePathId,
         modules.students.deleteOne,
         modules.response);
 

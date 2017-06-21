@@ -73,4 +73,75 @@ module.exports = {
             next();
         });
     },
+    /**
+     * Validates path id parameter
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    validatePathId: (req, res, next) => {
+        log.info('Module - validatePathId Goal');
+
+        log.info('Validating request...');
+        if (!req.params.id) {
+            log.error('Request validation failed');
+            let err = new Error('Missing required id parameter in the request path.');
+            err.status = 400;
+            next(err);
+            return;
+        }
+
+        if (!ctrls.mongodb.isObjectId(req.params.id)) {
+            log.error('Request validation failed');
+            let err = new Error('Invalid id parameter in the request path.');
+            err.status = 400;
+            next(err);
+            return;
+        }
+
+        log.info('Request validated!');
+        next();
+    },
+    /**
+     * Gets a goal
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     * @return {object}        Populates res.locals with goal document
+     */
+    getOne: (req, res, next) => {
+        log.info('Module - GetOne Goal');
+        ctrls.mongodb.findById(models.goals, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Failed getting goal: ' + req.params.id);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found goal [' + req.params.id + ']');
+            res.locals = result;
+            next();
+        });
+    },
+    /**
+     * Deletes a goal
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     * @return {object}        Populates res.locals with deletion result
+     */
+    deleteOne: (req, res, next) => {
+        log.info('Module - DeleteOne Goal');
+        ctrls.mongodb.findByIdAndRemove(models.goals, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Failed deleting goal: ' + req.params.id);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully deleted goal [' + req.params.id + ']');
+            res.locals = result;
+            next();
+        });
+    },
 };

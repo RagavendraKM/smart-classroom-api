@@ -18,6 +18,17 @@ module.exports = (router) => {
         modules.goals.getAll,
         modules.response);
 
-    // TODO: GET /goals/:id
-    // TODO: DELETE /goals/:id
+    log.info('Initializing Route GET /goals/:id');
+    router.get('/goals/:id',
+        modules.verify.params,
+        modules.goals.validatePathId,
+        modules.goals.getOne,
+        modules.response);
+
+    log.info('Initializing Route DELETE /goals/:id');
+    router.delete('/goals/:id',
+        modules.verify.params,
+        modules.goals.validatePathId,
+        modules.goals.deleteOne,
+        modules.response);
 };

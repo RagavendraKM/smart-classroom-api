@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 var schema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        required: [true, 'title is a required field']
     },
     description: {
         type: String,
@@ -22,10 +22,6 @@ var schema = new mongoose.Schema({
         type: Date
     },
     weight: {
-        type: Number,
-        default: 0
-    },
-    mark: {
         type: Number,
         default: 0
     }

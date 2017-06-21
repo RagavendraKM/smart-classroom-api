@@ -8,7 +8,8 @@ var modules = require('../modules');
 module.exports = (router) => {
     log.info('Initializing Route POST /goals');
     router.post('/goals',
-        // TODO: Request validation
+        modules.verify.body,
+        modules.goals.validateCreate,
         modules.goals.create,
         modules.response);
 

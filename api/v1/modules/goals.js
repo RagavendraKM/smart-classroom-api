@@ -4,6 +4,33 @@ var models = require('../models');
 
 module.exports = {
     /**
+     * Validates schema before creating a goal
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    validateCreate: (req, res, next) => {
+        log.info('Module - ValidateCreate Goal');
+
+        // Validate schema
+        log.info('Validating goal model...')
+        var goal = new models.goals(req.body);
+        var error = goal.validateSync();
+
+        if (error) {
+            log.error('Goal model validation failed!');
+            let err = new Error('Goal Validation Failed!');
+            err.status = 400;
+            // Remove stack trace but retain detailed description of validation errors
+            err.data = JSON.parse(JSON.stringify(error));
+            next(err);
+            return;
+        }
+
+        log.info('Goal model has been validated!');
+        next();
+    },
+    /**
      * Creates a goal
      * @param  {object}   req  Request object
      * @param  {object}   res  Response object

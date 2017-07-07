@@ -9,20 +9,6 @@ var validate = {
     }
 };
 
-var facebook = new mongoose.Schema({
-    id: {
-        type: String,
-        required: [true, 'id is a required field!'],
-        unique: [true, 'id must be unique']
-    },
-    profilePicture: {
-        type: String,
-        required: [true, 'profilePicture is a required field!']
-    }
-}, {
-    _id: false
-});
-
 var schema = new mongoose.Schema({
     facebook: {
         type: facebook,
@@ -40,7 +26,15 @@ var schema = new mongoose.Schema({
     },
     displayName: {
         type: String
+        required: true,
+        required: [true, 'displayName is a required field!'],
+        validate: validate.alphaNumeric
     },
+    password:{
+        type: String
+        required: true,
+        required: [true, 'password is a required field!'],
+	},
     birthday: {
         type: Date
     },

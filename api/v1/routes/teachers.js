@@ -32,6 +32,4 @@ module.exports = (router) => {
         modules.teachers.deleteOne,
         modules.response);
 
-    // TODO: POST /teachers/:id/classrooms/:classroomId
-    // TODO: DELETE /teachers/:id/classrooms/:classroomId
 };

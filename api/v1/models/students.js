@@ -11,7 +11,7 @@ var validate = {
         validator: (v) => {
             return !isNaN(parseFloat(v)) && isFinite(v);
         },
-        message: 'This feild must be a number!'
+        message: 'This field must be a number!'
     }
 };
 

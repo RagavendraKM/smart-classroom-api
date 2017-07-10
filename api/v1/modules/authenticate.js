@@ -5,7 +5,7 @@ var config = require('../../../config');
 
 module.exports =(req, res, next) => {
 
-    ctrls.mongodb.findOne(models.students, {username: req.body.username}, (error, result) => {
+    ctrls.mongodb.findOne(models.students, {'username': req.body.username}, (error, result) => {
 
         if (error) {
             log.error('User authentification failed!');
@@ -24,7 +24,7 @@ module.exports =(req, res, next) => {
         } else if (user) {
             // check if password matches
             if (user.password != req.body.password) {
-                res.locals = ({ success: false, message: 'Authentication failed: Wrong password.', 'user':user});
+                res.locals = ({ success: false, message: 'Authentication failed: Wrong password.', 'user':user, 'username': req.body.username});
             } else {
                 // if match, create JSON token
                 var token = jwt.sign(user, config.tokenSecret, {

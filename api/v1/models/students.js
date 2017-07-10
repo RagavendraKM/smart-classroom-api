@@ -126,7 +126,7 @@ var schema = new mongoose.Schema({
         required: [true, 'lastName is a required field!'],
         validate: validate.alphaNumeric
     },
-    userName: {
+    username: {
         type: String,
         required: true,
         required: [true, 'userName is a required field!'],

@@ -1,50 +1,42 @@
-module.exports = {
+const log = require('winston');
+var ctrls = require('../controllers');
+var models = require('../models');
+var config = require('../../../config.js');
 
-    /**
-     * Gets all teachers
-     * @param  {object}   req  Request object
-     * @param  {object}   res  Response object
-     * @param  {Function} next Callback function to move on to the next middleware
-     * @return {object}        Populates res.locals with array of all teachers documents
-     */
-	student: (req, res, next) => {
-    // find the student
-    student.getOne({
-    username: req.body.username
-    }, function(error, student) {
+module.exports =(req, res, next) => {
 
-		if (error) {
-			log.error('Student authentification failed!');
-			let err = new Error('Student authentification failed!');
-			err.status = 400;
-			// Remove stack trace but retain detailed description of validation errors
-			err.data = JSON.parse(JSON.stringify(error));
-			next(err);
-			return;
-		}
+    ctrls.mongodb.findOne(models.students, {username: req.body.username}, (error, result) => {
 
-		if (!student) {
-			res.json({ success: false, message: 'Authentication failed: Student not found.' });
-		} else if (student) {
-
-			// check if password matches
-			if (student.password != req.body.password) {
-			res.json({ success: false, message: 'Authentication failed: Wrong password.' });
-			} else {
-
-				// if student is found and password is right, create JSON token
-				var token = jwt.sign(student, app.get('superSecret'), {
-					expiresInMinutes: 1440 // expires in 24 hours
-				});
-				// return the information including token as JSON
-				res.json({
-					success: true,
-					message: 'Token given.',
-					token: token
-				});
-			}   
-
-		}
-
+        if (error) {
+            log.error('User authentification failed!');
+            let err = new Error('User authentification failed!');
+            err.status = 400;
+            // Remove stack trace but retain detailed description of validation errors
+            err.data = JSON.parse(JSON.stringify(error));
+            next(err);
+            return;
+        }
+		
+        var user=result;
+		
+        if (!user) {    // If user not found...
+            res.json({ success: false, message: 'Authentication failed: User not found.' });
+        } else if (user) {
+            // check if password matches
+            if (user.password != req.body.password) {
+                res.json({ success: false, message: 'Authentication failed: Wrong password.' });
+            } else {
+                // if match, create JSON token
+                var token = jwt.sign(user, config.tokenSecret, {
+                    expiresInMinutes: 1440 // expires in 24 hours
+                });
+                // return response as JWT
+                res.json({
+                    success: true,
+                    message: 'Token given.',
+                    token: token
+                });
+            }
+        }
     });
 };

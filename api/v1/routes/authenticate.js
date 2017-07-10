@@ -7,11 +7,7 @@ var modules = require('../modules');
  */
 module.exports = (router) => {
 	log.info('Initializing Route POST /authenticate');
-    router.post('/authenticate/students',
-        modules.authenticate.students,
-        modules.response);
-		
-    router.post('/authenticate/teachers',
-        modules.authenticate.teachers,
+    router.post('/authenticate',
+        modules.authenticate,
         modules.response);
 };

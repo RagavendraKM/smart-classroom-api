@@ -1,7 +1,7 @@
 const log = require('winston');
 var ctrls = require('../controllers');
 var models = require('../models');
-var config = require('../../../config.js');
+var config = require('../../../config');
 
 module.exports =(req, res, next) => {
 
@@ -20,23 +20,24 @@ module.exports =(req, res, next) => {
         var user=result;
 		
         if (!user) {    // If user not found...
-            res.json({ success: false, message: 'Authentication failed: User not found.' });
+            res.locals = ({ success: false, message: 'Authentication failed: User not found.' });
         } else if (user) {
             // check if password matches
             if (user.password != req.body.password) {
-                res.json({ success: false, message: 'Authentication failed: Wrong password.' });
+                res.locals = ({ success: false, message: 'Authentication failed: Wrong password.', 'user':user});
             } else {
                 // if match, create JSON token
                 var token = jwt.sign(user, config.tokenSecret, {
                     expiresInMinutes: 1440 // expires in 24 hours
                 });
                 // return response as JWT
-                res.json({
+                res.locals = ({
                     success: true,
                     message: 'Token given.',
                     token: token
                 });
             }
         }
+		next();
     });
 };

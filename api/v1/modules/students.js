@@ -1,4 +1,5 @@
 const log = require('winston');
+const bcrypt = require('bcrypt')
 var ctrls = require('../controllers');
 var models = require('../models');
 
@@ -39,18 +40,27 @@ module.exports = {
      */
     create: (req, res, next) => {
         log.info('Module - Create Student');
+
         var student = new models.students(req.body);
-        ctrls.mongodb.save(student, (err, result) => {
-            if (err) {
-                let err = new Error('Failed creating student!');
-                err.status = 500;
-                next(err);
-                return;
-            }
-            log.info('Successfully created student.');
-            res.locals = result;
-            next();
-        });
+		// Hash Password
+		var saltRounds = 10;
+		bcrypt.genSalt(saltRounds, function(err, salt) {
+			bcrypt.hash(req.body.password, salt, function(err, hash) {
+			    student.password = hash;
+				ctrls.mongodb.save(student, (err, result) => {
+					if (err) {
+						let err = new Error('Failed creating student!');
+						err.status = 500;
+						next(err);
+						return;
+					}
+					log.info('Successfully created student.');
+					res.locals = result;
+					next();
+				});
+			});
+		});
+
     },
     /**
      * Gets all students

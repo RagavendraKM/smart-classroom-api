@@ -40,24 +40,24 @@ module.exports = {
     create: (req, res, next) => {
         log.info('Module - Create Teacher');
         var teacher = new models.teachers(req.body);
-		// Hash Password
-		var saltRounds = 10;
-		bcrypt.genSalt(saltRounds, function(err, salt) {
-			bcrypt.hash(req.body.password, salt, function(err, hash) {
-				teacher.password = hash;
-				ctrls.mongodb.save(teacher, (err, result) => {
-					if (err) {
-						let err = new Error('Failed creating teacher!');
-						err.status = 500;
-						next(err);
-						return;
-					}
-					log.info('Successfully created teacher');
-					res.locals = result;
-					next();
-				});
-			});
-		});
+        // Hash Password
+        var saltRounds = 10;
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+            bcrypt.hash(req.body.password, salt, function(err, hash) {
+                teacher.password = hash;
+                ctrls.mongodb.save(teacher, (err, result) => {
+                    if (err) {
+                        let err = new Error('Failed creating teacher!');
+                        err.status = 500;
+                        next(err);
+                        return;
+                    }
+                    log.info('Successfully created teacher');
+                    res.locals = result;
+                    next();
+                });
+            });
+        });
     },
     /**
      * Gets all teachers

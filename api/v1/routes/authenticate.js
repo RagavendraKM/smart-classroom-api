@@ -6,7 +6,7 @@ var modules = require('../modules');
  * @param  {object} router ExpressJS Router
  */
 module.exports = (router) => {
-	log.info('Initializing Route POST /authenticate');
+    log.info('Initializing Route POST /authenticate');
     router.post('/authenticate',
         modules.authenticate,
         modules.response);

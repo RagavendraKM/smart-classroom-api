@@ -19,5 +19,5 @@ module.exports = {
     quizzes: require('./quizzes'),
     classrooms: require('./classrooms'),
     verify: require('./verify'),
-	authenticate: require('./authenticate')
+    authenticate: require('./authenticate')
 };

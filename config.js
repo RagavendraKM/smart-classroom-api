@@ -1,6 +1,7 @@
 module.exports = {
     mode: 'DEV', // [DEV/PROD]
     log: 'smart-classroom-api.log',
+    tokenSecret: '',
     dev: {
       port: 8080,
       host: 'localhost',

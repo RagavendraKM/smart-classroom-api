@@ -15,6 +15,7 @@ module.exports = (router) => {
 
     log.info('Initializing Route GET /students');
     router.get('/students',
+		modules.authenticate.checkToken,
         modules.students.getAll,
         modules.response);
 

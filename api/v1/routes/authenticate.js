@@ -9,6 +9,6 @@ module.exports = (router) => {
     log.info('Initializing Route POST /authenticate');
     router.post('/authenticate',
         modules.verify.body,
-        modules.authenticate,
+        modules.authenticate.giveToken,
         modules.response);
 };

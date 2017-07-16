@@ -1,4 +1,5 @@
 const log = require('winston');
+const bcrypt = require('bcrypt');
 var ctrls = require('../controllers');
 var models = require('../models');
 

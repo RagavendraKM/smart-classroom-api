@@ -50,6 +50,13 @@ module.exports = (router) => {
         modules.classrooms.getAllQuizzes,
         modules.response);
 
+    log.info('Initializing Route GET /classrooms/:id/quizzes/activated');
+    router.get('/classrooms/:id/quizzes/activated',
+        modules.verify.params,
+        modules.classrooms.validatePathId,
+        modules.classrooms.getAllActiveQuizzes,
+        modules.response);
+
     log.info('Initializing Route GET /classrooms/:id/students');
     router.get('/classrooms/:id/students',
         modules.verify.params,

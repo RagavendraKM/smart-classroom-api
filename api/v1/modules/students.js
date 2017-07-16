@@ -222,15 +222,15 @@ module.exports = {
         });
     },
     /**
-     * Validates an activity log entry for a student goal
+     * Validates a goal id
      * @param  {object}   req  Request object
      * @param  {object}   res  Response object
      * @param  {Function} next Callback function to move on to the next middleware
      */
-    valdiateActivityLog: (req, res, next) => {
-        log.info('Module - ValdiateActivityLog Student');
+    validateGoalId: (req, res, next) => {
+        log.info('Module - ValidateGoalId Student');
 
-        log.info('Validating goal id...');
+        log.info('Validating goalId...');
         if (!req.params.goalId) {
             log.error('Goal ID validation failed');
             let err = new Error('Missing required goal id parameter in the request path.');
@@ -240,12 +240,23 @@ module.exports = {
         }
 
         if (!ctrls.mongodb.isObjectId(req.params.goalId)) {
-            log.error('Goal ID validation failed');
+            log.error('goalId validation failed');
             let err = new Error('Invalid goal id parameter in the request path.');
             err.status = 400;
             next(err);
             return;
         }
+        log.info('goalId has been validated!');
+        next();
+    },
+    /**
+     * Validates an activity log entry for a student goal
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    valdiateActivityLog: (req, res, next) => {
+        log.info('Module - ValdiateActivityLog Student');
 
         // Validate schema
         log.info('Validating student goal...');
@@ -329,6 +340,48 @@ module.exports = {
                 res.locals = _result;
                 next();
             });
+        });
+    },
+    /**
+     * Deletes a students goal
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     * @return {object}        Populates res.locals with deleted goal
+     */
+    deleteGoal: (req, res, next) => {
+        log.info('Module - DeleteGoal Student');
+        ctrls.mongodb.findById(models.students, req.params.id, (err, student) => {
+            if (err) {
+                let err = new Error('Failed getting student: ' + req.params.id);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found student [' + req.params.id + ']');
+
+            // Linear search TODO: optimize
+            log.info('Searching student for goal [' + req.params.goalId + ']');
+            let found = false;
+            for (let i = 0; i < student.goals; i++) {
+                if (ctrls.mongodb.isEqual(student.goals[i].goal, req.params.goalId)) {
+                    found = true;
+                    log.info('Found student goal [' + req.params.goalId + ']');
+                    res.locals = student.goals[i];
+                    log.info('Removing student goal [' + req.params.goalId + ']');
+                    student.goals.splice(i, 1);
+                    break;
+                }
+            }
+
+            if (!found) {
+                let err = new Error('Goal not found: ' + req.params.goalId);
+                err.status = 404;
+                next(err);
+                return;
+            }
+
+            next();
         });
     }
 };

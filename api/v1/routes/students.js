@@ -46,11 +46,19 @@ module.exports = (router) => {
         modules.verify.body,
         modules.verify.params,
         modules.students.validatePathId,
+        modules.students.validateGoalId,
         modules.students.valdiateActivityLog,
         modules.students.updateGoalActivityLog,
         modules.response);
 
-    // TODO: DELETE /students/:id/goals/:goalId
+    log.info('Initializing Route DELETE /students/:id/goals/:goalId');
+    router.delete('/students/:id/goals/:goalId',
+        modules.verify.params,
+        modules.students.validatePathId,
+        modules.students.validateGoalId,
+        modules.students.deleteGoal,
+        modules.response);
+
     // TODO: POST /students/:id/quizzes
     // TODO: POST /students/:id/quizzes/:quizId/results
     // TODO: POST /students/:id/classrooms/:classroomId

@@ -3,6 +3,17 @@ const mongoose = require('mongoose');
 
 module.exports = {
     /**
+     * Checks if two non null object ids are equal
+     * @param  {string|object}  id1 First Mongo DB id
+     * @param  {string|object}  id2 Second Mongo DB id
+     * @return {Boolean}     true if ids are equal
+     */
+    isEqual: (id1, id2) => {
+        id1 = (id1 === 'string') ? new mongoose.Types.ObjectId(id1) : id1;
+        id2 = (id2 === 'string') ? new mongoose.Types.ObjectId(id2) : id2;
+        return id1.equals(id2);
+    },
+    /**
      * Checks if id is a valid Mongo DB _id
      * @param  {String}  id ID string
      * @return {Boolean}    true/false depending on weither or not the id is valid

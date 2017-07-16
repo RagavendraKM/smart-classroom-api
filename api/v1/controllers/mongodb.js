@@ -100,6 +100,33 @@ module.exports = {
         }
     },
     /**
+     * Finds one document in Mongo DB based on _id and populates sub fields
+     * @param  {object}   model    Mongoose Model
+     * @param  {String}   id       Mongo DB id
+     * @param  {Array}   populate  Array of fields to populate [{path: 'field'}]
+     * @param  {Function} callback JavaScript Callback
+     */
+    findByIdAndPopulate: (model, id, populate, callback) => {
+        try {
+            log.info('[findByID] Searching Mongo DB for ' + id);
+            model.findById(id).populate(populate).exec((err, result) => {
+                if (err) {
+                    // Catches Mongo DB errors
+                    log.error('Mongo DB findByID failed!', err);
+                    callback(err);
+                    return;
+                }
+                log.info('[findByID] Finished searching Mongo DB.');
+                log.debug(result);
+                callback(null, result);
+            });
+        } catch (error) {
+            // Catches execution errors
+            log.error('Mongoose execution of [findByID] failed', error);
+            callback(error);
+        }
+    },
+    /**
      * Finds one document in Mongo DB
      * @param  {object}   model    Mongoose Model
      * @param  {object}   criteria Search criteria

@@ -43,9 +43,16 @@ module.exports = (router) => {
         modules.classrooms.createQuiz,
         modules.response);
 
+    log.info('Initializing Route GET /classrooms/:id/quizzes');
+    router.get('/classrooms/:id/quizzes',
+        modules.verify.params,
+        modules.classrooms.validatePathId,
+        modules.classrooms.getAllQuizzes,
+        modules.response);
 
-    // TODO: GET /classrooms/:id/quizzes
-    // TODO: POST /classrooms/:id/quizzes/:quizId/start
-    // TODO: POST /classrooms/:id/quizzes/:quizId/stop
+
+    // TODO: Start a quiz (POST /classrooms/:id/quizzes/:quizId/start)
+    // TODO: Stop a quiz (POST /classrooms/:id/quizzes/:quizId/stop)
+    // TODO: Student Submit a quiz (POST /students/:id/quizzes/:quizId/results)
 
 };

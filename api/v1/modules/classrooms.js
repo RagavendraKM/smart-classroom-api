@@ -295,5 +295,28 @@ module.exports = {
                 });
             });
         });
+    },
+    /**
+     * Gets all classroom quizzes
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    getAllQuizzes: (req, res, next) => {
+        log.info('Module - getAllQuizzes Classrooms');
+        let populators = [{
+            path: 'quizHistory'
+        }];
+        ctrls.mongodb.findByIdAndPopulate(models.classrooms, req.params.id, populators, (err, classroom) => {
+            if (err) {
+                let err = new Error('Failed getting classroom: ' + req.params.id);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found classroom [' + req.params.id + ']');
+            res.locals = classroom.quizHistory;
+            next();
+        });
     }
 };

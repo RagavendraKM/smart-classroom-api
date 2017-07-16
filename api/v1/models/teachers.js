@@ -22,18 +22,17 @@ var schema = new mongoose.Schema({
     },
     displayName:{
         type: String,
-        required: [true, 'displayName is a required field!'],
+        default: 'Teacher',
         validate: validate.alphaNumeric
     },
     username: {
         type: String,
-        required: true,
         required: [true, 'username is a required field!'],
+        unique: [true, 'username must be unique'],
         validate: validate.alphaNumeric
     },
     password: {
         type: String,
-        required: true,
         required: [true, 'password is a required field!'],
     },
     birthday: {

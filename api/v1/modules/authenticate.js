@@ -6,149 +6,119 @@ var models = require('../models');
 var config = require('../../../config');
 
 module.exports = {
-	giveToken: (req, res, next) => {
+    giveToken: (req, res, next) => {
 
-		// Verify payload has required parameters
-		if (!req.body.userType) {
-			log.error('userType is a required field!');
-			let err = new Error('userType is a required field!');
-			err.status = 400;
-			next(err);
-			return;
-		}
-		if (!req.body.username) {
-			log.error('username is a required field!');
-			let err = new Error('username is a required field!');
-			err.status = 400;
-			next(err);
-			return;
-		}
-		if (!req.body.password) {
-			log.error('password is a required field!');
-			let err = new Error('password is a required field!');
-			err.status = 400;
-			next(err);
-			return;
-		}
+        // Verify payload has required parameters
+        if (!req.body.userType) {
+            log.error('userType is a required field!');
+            let err = new Error('userType is a required field!');
+            err.status = 400;
+            next(err);
+            return;
+        }
+        if (!req.body.username) {
+            log.error('username is a required field!');
+            let err = new Error('username is a required field!');
+            err.status = 400;
+            next(err);
+            return;
+        }
+        if (!req.body.password) {
+            log.error('password is a required field!');
+            let err = new Error('password is a required field!');
+            err.status = 400;
+            next(err);
+            return;
+        }
 
-		// Check user type of login, whether it's student or teacher
-		var userType;
-		switch (req.body.userType) {
-			case 'teacher':
-				userType = models.teachers;
-				break;
-			case 'student':
-				userType = models.students;
-				break;
-			default:
-				log.error('Invalid User Type!');
-				let err = new Error('Invalid User Type!');
-				err.status = 400;
-				next(err);
-				return;
-		}
+        // Check user type of login, whether it's student or teacher
+        var userType;
+        switch (req.body.userType) {
+            case 'teacher':
+                userType = models.teachers;
+                break;
+            case 'student':
+                userType = models.students;
+                break;
+            default:
+                log.error('Invalid User Type!');
+                let err = new Error('Invalid User Type!');
+                err.status = 400;
+                next(err);
+                return;
+        }
 
-		ctrls.mongodb.findOne(userType, {
-			'username': req.body.username
-		}, (error, result) => {
+        ctrls.mongodb.findOne(userType, {
+            'username': req.body.username
+        }, (error, result) => {
 
-			if (error) {
-				log.error('User authentification failed!');
-				let err = new Error('User authentification failed!');
-				err.status = 400;
-				// Remove stack trace but retain detailed description of validation errors
-				err.data = JSON.parse(JSON.stringify(error));
-				next(err);
-				return;
-			}
+            if (error) {
+                log.error('User authentification failed!');
+                let err = new Error('User authentification failed!');
+                err.status = 400;
+                // Remove stack trace but retain detailed description of validation errors
+                err.data = JSON.parse(JSON.stringify(error));
+                next(err);
+                return;
+            }
 
-			var user = result;
+            var user = result;
 
-			if (!user) {
-				log.info('Authentication failed: User not found.');
-				let err = new Error('Authentication failed: User not found.');
-				err.status = 404;
-				next(err);
-				return;
-			}
+            if (!user) {
+                log.info('Authentication failed: User not found.');
+                let err = new Error('Authentication failed: User not found.');
+                err.status = 404;
+                next(err);
+                return;
+            }
 
-			var hashResult;
+            var hashResult;
 
-			// compare hashed password and input password
-			try {
-				hashResult = bcrypt.compareSync(req.body.password, user.password);
-			} catch (error) {
-				log.error('Bcrypt compareSync failed!');
-				let err = new Error('Internal Server Error');
-				err.status = 500;
-				next(err);
-				return;
-			}
+            // compare hashed password and input password
+            try {
+                hashResult = bcrypt.compareSync(req.body.password, user.password);
+            } catch (error) {
+                log.error('Bcrypt compareSync failed!');
+                let err = new Error('Internal Server Error');
+                err.status = 500;
+                next(err);
+                return;
+            }
 
-			if (!hashResult) {
-				log.info('Authentication failed: Wrong password.');
-				let err = new Error('Unauthorized: Wrong password.');
-				err.status = 401;
-				err.data = {
-					username: req.body.username
-				};
-				next(err);
-				return;
-			}
+            if (!hashResult) {
+                log.info('Authentication failed: Wrong password.');
+                let err = new Error('Unauthorized: Wrong password.');
+                err.status = 401;
+                err.data = {
+                    username: req.body.username
+                };
+                next(err);
+                return;
+            }
 
-			var token;
-			try {
-				token = jwt.sign({
-					'user': user.username
-				}, config.tokenSecret, {
-					expiresIn: '24h' // expires in 24 hours
-				});
-			} catch (error) {
-				log.error('JWT sign failed!');
-				let err = new Error('Internal Server Error');
-				err.status = 500;
-				next(err);
-				return;
-			}
+            var token;
+            try {
+                token = jwt.sign({
+                    'id': user._id,
+                    'type': req.body.userType
+                }, config.tokenSecret, {
+                    expiresIn: '24h' // expires in 24 hours
+                });
+            } catch (error) {
+                log.error('JWT sign failed!');
+                let err = new Error('Internal Server Error');
+                err.status = 500;
+                next(err);
+                return;
+            }
 
-			// return response as JWT
-			res.locals = {
-				success: true,
-				token: token
-			};
+            // return response as JWT
+            res.locals = {
+                success: true,
+                token: token
+            };
 
-			next();
-		});
-	},
-	checkToken: (req, res, next) => {
-		// check for token in various locations
-		var token = req.body.token || req.query.token || req.headers['auth-token'];
-
-		// if found...
-		if (token) {
-			// verifies secret and checks if token is valid
-			jwt.verify(token, config.tokenSecret, function(err, decoded) {      
-				if (err) {
-					log.error('JWT check failed!');
-					let err = new Error('Invalid Token for authentication, forbidden');
-					err.status = 403;
-					next(err);
-					return; 
-				} else {
-					req.auth = decoded;    
-					next();
-				}
-			});
-		} 
-		
-		// No token? Return error.
-		else {
-			log.error('JWT check failed!');
-			let err = new Error('Missing authentication token, forbidden');
-			err.status = 403;
-			next(err);
-			return; 
-
-		}
-	}
+            next();
+        });
+    }
 };

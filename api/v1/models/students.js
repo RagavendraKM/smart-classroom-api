@@ -117,7 +117,6 @@ var quizHistory = new mongoose.Schema({
 var schema = new mongoose.Schema({
     firstName: {
         type: String,
-        required: true,
         required: [true, 'firstName is a required field!'],
         validate: validate.alphaNumeric
     },
@@ -128,13 +127,13 @@ var schema = new mongoose.Schema({
     },
     displayName:{
         type: String,
-        required: [true, 'displayName is a required field!'],
+        default: 'Student',
         validate: validate.alphaNumeric
     },
     username: {
         type: String,
-        required: true,
         required: [true, 'username is a required field!'],
+        unique: [true, 'username must be unique'],
         validate: validate.alphaNumeric
     },
     password: {

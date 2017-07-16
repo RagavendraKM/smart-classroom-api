@@ -9,8 +9,8 @@ module.exports = {
      * @return {Boolean}     true if ids are equal
      */
     isEqual: (id1, id2) => {
-        id1 = (id1 === 'string') ? new mongoose.Types.ObjectId(id1) : id1;
-        id2 = (id2 === 'string') ? new mongoose.Types.ObjectId(id2) : id2;
+        id1 = (typeof id1 === 'string') ? new mongoose.Types.ObjectId(id1) : id1;
+        id2 = (typeof id2 === 'string') ? new mongoose.Types.ObjectId(id2) : id2;
         return id1.equals(id2);
     },
     /**

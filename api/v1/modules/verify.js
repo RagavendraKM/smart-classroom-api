@@ -1,4 +1,6 @@
 const log = require('winston');
+const jwt = require('jsonwebtoken');
+var config = require('../../../config');
 
 module.exports = {
     /**
@@ -30,5 +32,38 @@ module.exports = {
             return;
         }
         next();
+    },
+    /**
+     * Verifies JWT
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    token: (req, res, next) => {
+        // check for token in various locations
+        var token = req.body.token || req.query.token || req.headers['token'];
+
+        if (!token) {
+            log.error('Missing JWT');
+            let err = new Error('Missing authentication token, forbidden');
+            err.status = 403;
+            next(err);
+            return;
+        }
+
+
+        // verifies secret and checks if token is valid
+        jwt.verify(token, config.tokenSecret, function(err, decoded) {
+            if (err) {
+                log.error('JWT check failed!');
+                let err = new Error('Invalid Token for authentication, forbidden');
+                err.status = 403;
+                next(err);
+                return;
+            }
+
+            req.auth = decoded;
+            next();
+        });
     }
 };

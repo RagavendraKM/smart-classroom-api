@@ -44,11 +44,11 @@ module.exports = {
         var student = new models.students(req.body);
         // Hash Password
         var saltRounds = 10;
-        bcrypt.genSalt(saltRounds, function(err, salt) {
-            bcrypt.hash(req.body.password, salt, function(err, hash) {
+        bcrypt.genSalt(saltRounds, function(error, salt) {
+            bcrypt.hash(req.body.password, salt, function(error, hash) {
                 student.password = hash;
-                ctrls.mongodb.save(student, (err, result) => {
-                    if (err) {
+                ctrls.mongodb.save(student, (error, result) => {
+                    if (error) {
                         let err = new Error('Failed creating student!');
                         err.status = 500;
                         next(err);
@@ -383,5 +383,54 @@ module.exports = {
 
             next();
         });
+    },
+    /**
+     * Verifies the identity of a student based on JWT
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    verifyId: (req, res, next) => {
+        log.info('Module - verifyId Student');
+        if (!req.auth) {
+            log.error('Missing req.auth decoded token');
+            let err = new Error('Invalid Token for authentication, forbidden');
+            err.status = 403;
+            next(err);
+            return;
+        }
+
+        if (req.auth.type === 'teacher') {
+            log.info('Teacher authenticated, access granted');
+            next();
+            return;
+        }
+
+        if (req.auth.type !== 'student') {
+            log.error('Unkown user type');
+            let err = new Error('Invalid Token for authentication');
+            err.status = 401;
+            next(err);
+            return;
+        }
+
+        if (!ctrls.mongodb.isObjectId(req.auth.id)) {
+            log.error('Token id is not a valid Mongo DB id');
+            let err = new Error('Invalid Token for authentication');
+            err.status = 401;
+            next(err);
+            return;
+        }
+
+        if (!ctrls.mongodb.isEqual(req.auth.id, req.params.id)) {
+            log.error('User is unauthorized to access this data.');
+            let err = new Error('Unauthorized');
+            err.status = 401;
+            next(err);
+            return;
+        }
+
+        log.info('Authorized');
+        next();
     }
 };

@@ -18,10 +18,6 @@ var question = new mongoose.Schema({
         type: String,
         required: true
     },
-    answer: {
-        type: String,
-        required: true
-    },
     options: {
         type: [option],
         default: []
@@ -40,12 +36,12 @@ var schema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    date: {
+    createdDate: {
         type: Date
     },
-    duration: {
-        type: Number,
-        default: 0
+    activated: {
+        type: Boolean,
+        default: false
     },
     questions: {
         type: [question],

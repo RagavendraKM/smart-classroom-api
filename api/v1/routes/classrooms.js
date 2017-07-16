@@ -27,10 +27,25 @@ module.exports = (router) => {
 
     log.info('Initializing Route DELETE /classrooms/:id');
     router.delete('/classrooms/:id',
+        //  modules.verify.token,
         modules.verify.params,
         modules.classrooms.validatePathId,
+        //  modules.classrooms.verifyTeacher,
         modules.classrooms.deleteOne,
         modules.response);
 
-    // TODO: POST /classrooms/:id/quizzes/:id
+    log.info('Initializing Route POST /classrooms/:id/quizzes');
+    router.post('/classrooms/:id/quizzes',
+        modules.verify.body,
+        modules.verify.params,
+        modules.classrooms.validatePathId,
+        modules.classrooms.validateQuizCreation,
+        modules.classrooms.createQuiz,
+        modules.response);
+
+
+    // TODO: GET /classrooms/:id/quizzes
+    // TODO: POST /classrooms/:id/quizzes/:quizId/start
+    // TODO: POST /classrooms/:id/quizzes/:quizId/stop
+
 };

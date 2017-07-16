@@ -189,4 +189,111 @@ module.exports = {
             next();
         });
     },
+
+    /**
+     * Validates path quizId parameter
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    validateQuizId: (req, res, next) => {
+        log.info('Module - validateQuizId Classrooms');
+
+        log.info('Validating request...');
+        if (!req.params.quizId) {
+            log.error('Request validation failed');
+            let err = new Error('Missing required quiz id parameter in the request path.');
+            err.status = 400;
+            next(err);
+            return;
+        }
+
+        if (!ctrls.mongodb.isObjectId(req.params.quizId)) {
+            log.error('Request validation failed');
+            let err = new Error('Invalid quiz id parameter in the request path.');
+            err.status = 400;
+            next(err);
+            return;
+        }
+
+        log.info('Quiz Id Request validated!');
+        next();
+    },
+
+    /**
+     * Validates schema before creating a quiz
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    validateQuizCreation: (req, res, next) => {
+        log.info('Module - validateQuizCreation Classrooms');
+
+        // Validate schema
+        log.info('Validating quiz model...')
+        var quiz = new models.quizzes(req.body);
+        var error = quiz.validateSync();
+
+        if (error) {
+            log.error('Quiz model validation failed!');
+            let err = new Error('Quiz Validation Failed!');
+            err.status = 400;
+            // Remove stack trace but retain detailed description of validation errors
+            err.data = JSON.parse(JSON.stringify(error));
+            next(err);
+            return;
+        }
+
+        log.info('Quiz model has been validated!');
+        next();
+    },
+
+    /**
+     * Creates a Quiz
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    createQuiz: (req, res, next) => {
+        log.info('Module - createQuiz Classrooms');
+
+        var quiz = new models.quizzes(req.body);
+        ctrls.mongodb.findById(models.classrooms, req.params.id, (err, classroom) => {
+            if (err) {
+                let err = new Error('Failed getting classroom: ' + req.params.id);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found classroom [' + req.params.id + ']');
+
+            log.info('Creating Quiz for classroom [' + req.params.id + ']');
+            ctrls.mongodb.save(quiz, (err, result) => {
+                if (err) {
+                    let err = new Error('Error creating quiz for classroom [' + req.params.id + ']');
+                    err.status = 500;
+                    next(err);
+                    return;
+                }
+
+                log.info('Successfully created quiz');
+                res.locals = result;
+
+                log.info('Adding quiz [' + result._id + '] to classroom [' + classroom._id + ']');
+                classroom.quizHistory.push(result._id);
+
+                ctrls.mongodb.save(classroom, (err, _result) => {
+                    if (err) {
+                        let err = new Error('Failed updating student goal activity log!');
+                        err.status = 500;
+                        next(err);
+                        return;
+                    }
+
+                    log.info('Succesfully added quiz [' + result._id + '] to classroom [' + classroom._id + ']');
+                    next();
+                });
+            });
+        });
+    }
 };

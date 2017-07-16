@@ -6,13 +6,6 @@ var modules = require('../modules');
  * @param  {object} router ExpressJS Router
  */
 module.exports = (router) => {
-    log.info('Initializing Route POST /quizzes');
-    router.post('/quizzes',
-        modules.verify.params,
-        modules.quizzes.create,
-        modules.quizzes.create,
-        modules.response);
-
     log.info('Initializing Route GET /quizzes');
     router.get('/quizzes',
         modules.quizzes.getAll,

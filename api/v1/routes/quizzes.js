@@ -24,4 +24,18 @@ module.exports = (router) => {
         modules.quizzes.validatePathId,
         modules.quizzes.deleteOne,
         modules.response);
+
+    log.info('Initializing Route DELETE /quizzes/:id/start');
+    router.post('/quizzes/:id/start',
+        modules.verify.params,
+        modules.quizzes.validatePathId,
+        modules.quizzes.startQuiz,
+        modules.response);
+
+    log.info('Initializing Route DELETE /quizzes/:id/stop');
+    router.post('/quizzes/:id/stop',
+        modules.verify.params,
+        modules.quizzes.validatePathId,
+        modules.quizzes.stopQuiz,
+        modules.response);
 };

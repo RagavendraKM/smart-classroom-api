@@ -284,7 +284,7 @@ module.exports = {
 
                 ctrls.mongodb.save(classroom, (err, _result) => {
                     if (err) {
-                        let err = new Error('Failed updating student goal activity log!');
+                        let err = new Error('Failed adding quiz [' + result._id + '] to classroom [' + classroom._id + ']');
                         err.status = 500;
                         next(err);
                         return;

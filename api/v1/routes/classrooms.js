@@ -64,9 +64,5 @@ module.exports = (router) => {
         modules.classrooms.getAllStudents,
         modules.response);
 
-
-    // TODO: Start a quiz (POST /classrooms/:id/quizzes/:quizId/start)
-    // TODO: Stop a quiz (POST /classrooms/:id/quizzes/:quizId/stop)
     // TODO: Student Submit a quiz (POST /students/:id/quizzes/:quizId/results)
-
 };

@@ -137,7 +137,7 @@ module.exports = {
             log.info('[findOne] Searching Mongo DB');
             log.debug('Criteria:');
             log.debug(criteria);
-            model.findOne(criteria).exec((err, result) => {
+            model.findOne(criteria).select('+password').exec((err, result) => {
                 if (err) {
                     // Catches Mongo DB errors
                     log.error('Mongo DB findOne failed!', err);

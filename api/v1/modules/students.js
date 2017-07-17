@@ -507,6 +507,35 @@ module.exports = {
             });
         });
     },
+	submitAttendance: (req, res, next) => {
+        log.info('Module - submitQuiz Student');
+        ctrls.mongodb.findById(models.students, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Failed getting student!');
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found student [' + req.params.id + ']');
+
+            log.info('Submitting student quiz');
+            result.quizHistory.push(req.body);
+
+            ctrls.mongodb.save(result, (err, _result) => {
+                if (err) {
+                    let err = new Error('Failed submitting student quiz!');
+                    err.status = 500;
+                    next(err);
+                    return;
+                }
+
+                log.info('Successfully submitted quiz for student [' + req.params.id + ']');
+
+                res.locals = _result;
+                next();
+            });
+        });
+    },
     /**
      * Assigns goals to a list of students
      * @param  {object}   req  Request object

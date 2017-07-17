@@ -35,5 +35,10 @@ var schema = new mongoose.Schema({
         ref: 'Quizzes',
         default: []
     }],
+	attendanceHistory: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Attendances',
+        default: []
+    }],
 });
 module.exports = mongoose.model('Classrooms', schema);

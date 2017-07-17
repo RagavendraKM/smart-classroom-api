@@ -122,7 +122,10 @@ module.exports = {
     getOne: (req, res, next) => {
         log.info('Module - GetOne Student');
         let populators = [{
-            path: 'classrooms'
+            path: 'classrooms',
+            populate: {
+                path: 'teacher'
+            }
         }];
         ctrls.mongodb.findByIdAndPopulate(models.students, req.params.id, populators, (err, result) => {
             if (err) {

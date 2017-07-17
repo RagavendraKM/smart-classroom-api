@@ -144,6 +144,7 @@ var schema = new mongoose.Schema({
         type: String,
         required: true,
         required: [true, 'password is a required field!'],
+        select: false
     },
     birthday: {
         type: Date

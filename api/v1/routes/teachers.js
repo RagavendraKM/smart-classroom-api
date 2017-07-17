@@ -18,7 +18,6 @@ module.exports = (router) => {
     if (config.mode !== 'PROD') {
         log.info('Initializing Route GET /teachers');
         router.get('/teachers',
-            modules.verify.token,
             modules.teachers.getAll,
             modules.response);
     }

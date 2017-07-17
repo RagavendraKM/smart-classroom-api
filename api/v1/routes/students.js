@@ -1,6 +1,6 @@
 const log = require('winston');
 var modules = require('../modules');
-var config = require('../../../config')
+var config = require('../../../config');
 
 /**
  * Routes for /students endpoints

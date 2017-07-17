@@ -1,5 +1,6 @@
 const log = require('winston');
 var modules = require('../modules');
+var config = require('../../../config');
 
 /**
  * Routes for /classrooms endpoints
@@ -13,54 +14,67 @@ module.exports = (router) => {
         modules.classrooms.create,
         modules.response);
 
-    log.info('Initializing Route GET /classrooms');
-    router.get('/classrooms',
-        modules.classrooms.getAll,
-        modules.response);
+    // This route should be disabled in production
+    if (config.mode !== 'PROD') {
+        log.info('Initializing Route GET /classrooms');
+        router.get('/classrooms',
+            modules.classrooms.getAll,
+            modules.response);
+    }
 
     log.info('Initializing Route GET /classrooms/:id');
     router.get('/classrooms/:id',
+        modules.verify.token,
         modules.verify.params,
         modules.classrooms.validatePathId,
+        modules.classrooms.verifyTeacherOrStudent,
         modules.classrooms.getOne,
         modules.response);
 
     log.info('Initializing Route DELETE /classrooms/:id');
     router.delete('/classrooms/:id',
-        //  modules.verify.token,
+        modules.verify.token,
         modules.verify.params,
         modules.classrooms.validatePathId,
-        //  modules.classrooms.verifyTeacher,
+        modules.classrooms.verifyTeacher,
         modules.classrooms.deleteOne,
         modules.response);
 
     log.info('Initializing Route POST /classrooms/:id/quizzes');
     router.post('/classrooms/:id/quizzes',
+        modules.verify.token,
         modules.verify.body,
         modules.verify.params,
         modules.classrooms.validatePathId,
+        modules.classrooms.verifyTeacher,
         modules.classrooms.validateQuizCreation,
         modules.classrooms.createQuiz,
         modules.response);
 
     log.info('Initializing Route GET /classrooms/:id/quizzes');
     router.get('/classrooms/:id/quizzes',
+        modules.verify.token,
         modules.verify.params,
         modules.classrooms.validatePathId,
+        modules.classrooms.verifyTeacherOrStudent,
         modules.classrooms.getAllQuizzes,
         modules.response);
 
     log.info('Initializing Route GET /classrooms/:id/quizzes/activated');
     router.get('/classrooms/:id/quizzes/activated',
+        modules.verify.token,
         modules.verify.params,
         modules.classrooms.validatePathId,
+        modules.classrooms.verifyTeacherOrStudent,
         modules.classrooms.getAllActiveQuizzes,
         modules.response);
 
     log.info('Initializing Route GET /classrooms/:id/students');
     router.get('/classrooms/:id/students',
+        modules.verify.token,
         modules.verify.params,
         modules.classrooms.validatePathId,
+        modules.classrooms.verifyTeacher,
         modules.classrooms.getAllStudents,
         modules.response);
 };

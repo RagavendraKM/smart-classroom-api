@@ -371,5 +371,122 @@ module.exports = {
             res.locals = classroom.students;
             next();
         });
+    },
+
+    /**
+     * Verifies teacher identity based on JWT
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    verifyTeacher: (req, res, next) => {
+        log.info('Module - verifyTeacher Classrooms');
+        if (!req.auth) {
+            log.error('Missing req.auth decoded token');
+            let err = new Error('Invalid Token for authentication, forbidden');
+            err.status = 403;
+            next(err);
+            return;
+        }
+
+        if (req.auth.type !== 'teacher') {
+            log.error('Invalid user type in token');
+            let err = new Error('Unauthorized! Only teachers can access this data!');
+            err.status = 401;
+            next(err);
+            return;
+        }
+
+        if (!ctrls.mongodb.isObjectId(req.auth.id)) {
+            log.error('Token id is not a valid Mongo DB id');
+            let err = new Error('Invalid Token for authentication');
+            err.status = 401;
+            next(err);
+            return;
+        }
+
+        ctrls.mongodb.findById(models.classrooms, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Failed getting classroom: ' + req.params.id);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found classroom [' + req.params.id + ']');
+
+            if (!ctrls.mongodb.isEqual(req.auth.id, result.teacher)) {
+                log.error('User is unauthorized to access this data.');
+                let err = new Error('User is unauthorized to access this data.');
+                err.status = 401;
+                next(err);
+                return;
+            }
+
+            log.info('Authorized');
+            next();
+        });
+    },
+    /**
+     * Verifies identity teacher or student in classroom  based on JWT
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    verifyTeacherOrStudent: (req, res, next) => {
+        log.info('Module - verifyTeacherOrStudent Classrooms');
+        if (!req.auth) {
+            log.error('Missing req.auth decoded token');
+            let err = new Error('Invalid Token for authentication, forbidden');
+            err.status = 403;
+            next(err);
+            return;
+        }
+
+        if (req.auth.type !== 'teacher' && req.auth.type !== 'student') {
+            log.error('Invalid user type in token');
+            let err = new Error('Invalid Token for authentication, forbidden');
+            err.status = 403;
+            next(err);
+            return;
+        }
+
+        if (!ctrls.mongodb.isObjectId(req.auth.id)) {
+            log.error('Token id is not a valid Mongo DB id');
+            let err = new Error('Invalid Token for authentication');
+            err.status = 401;
+            next(err);
+            return;
+        }
+
+        ctrls.mongodb.findById(models.classrooms, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Failed getting classroom: ' + req.params.id);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found classroom [' + req.params.id + ']');
+
+
+            if (req.auth.type === 'teacher') {
+                if (!ctrls.mongodb.isEqual(req.auth.id, result.teacher)) {
+                    log.error('User is unauthorized to access this data.');
+                    let err = new Error('User is unauthorized to access this data.');
+                    err.status = 401;
+                    next(err);
+                    return;
+                }
+            } else {
+                if (result.students.indexOf(req.auth.id) < 0) {
+                    log.error('User is unauthorized to access this data.');
+                    let err = new Error('User is unauthorized to access this data.');
+                    err.status = 401;
+                    next(err);
+                    return;
+                }
+            }
+            log.info('Authorized');
+            next();
+        });
     }
 };

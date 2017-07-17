@@ -119,7 +119,10 @@ module.exports = {
      */
     getOne: (req, res, next) => {
         log.info('Module - GetOne Teacer');
-        ctrls.mongodb.findById(models.teachers, req.params.id, (err, result) => {
+        let populators = [{
+            path: 'classrooms'
+        }];
+        ctrls.mongodb.findByIdAndPopulate(models.teachers, req.params.id, populators, (err, result) => {
             if (err) {
                 let err = new Error('Failed getting teacher: ' + req.params.id);
                 err.status = 500;

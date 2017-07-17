@@ -507,6 +507,12 @@ module.exports = {
             });
         });
     },
+	/**
+     * Submits attendance
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
 	submitAttendance: (req, res, next) => {
         log.info('Module - submitAttendance Student');
         ctrls.mongodb.findById(models.classrooms, req.query.classroomid, (err, result) => {
@@ -521,8 +527,8 @@ module.exports = {
             log.info('Submitting student quiz');
 			//start looking for student in attendance list
             var found = false;
-			while (var ii = 0; place < result.attendanceHistory.presences.size(); ii++){
-				if (result.attendanceHistory.presences[curplace].student.id = ){	//if found, mark attended
+			for (var ii = 0; place < result.attendanceHistory.presences.size(); ii++){
+				if (result.attendanceHistory.presences[curplace].student.username == req.query.username){	//if found, mark attended
 					result.attendanceHistory.presences[curplace].present = true;
 					found = true;
 					break;

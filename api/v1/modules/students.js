@@ -508,28 +508,44 @@ module.exports = {
         });
     },
 	submitAttendance: (req, res, next) => {
-        log.info('Module - submitQuiz Student');
-        ctrls.mongodb.findById(models.students, req.params.id, (err, result) => {
+        log.info('Module - submitAttendance Student');
+        ctrls.mongodb.findById(models.classrooms, req.query.classroomid, (err, result) => {
             if (err) {
-                let err = new Error('Failed getting student!');
+                let err = new Error('Failed getting classroom!');
                 err.status = 500;
                 next(err);
                 return;
             }
-            log.info('Successfully found student [' + req.params.id + ']');
+            log.info('Successfully found classroom [' + req.query.classroomid + ']');
 
             log.info('Submitting student quiz');
-            result.quizHistory.push(req.body);
+			//start looking for student in attendance list
+            var found = false;
+			while (var ii = 0; place < result.attendanceHistory.presences.size(); ii++){
+				if (result.attendanceHistory.presences[curplace].student.id = ){	//if found, mark attended
+					result.attendanceHistory.presences[curplace].present = true;
+					found = true;
+					break;
+				}
+			}
+			
+			//if cannot find student, throw error
+			if (found){
+				let err = new Error('Failed submitting student quiz, cannot find student in attendance list!');
+                err.status = 500;
+                next(err);
+                return;
+			}
 
             ctrls.mongodb.save(result, (err, _result) => {
                 if (err) {
-                    let err = new Error('Failed submitting student quiz!');
+                    let err = new Error('Failed submitting student attendance!');
                     err.status = 500;
                     next(err);
                     return;
                 }
 
-                log.info('Successfully submitted quiz for student [' + req.params.id + ']');
+                log.info('Successfully submitted attendance for student [' + req.query.studentid + ']');
 
                 res.locals = _result;
                 next();

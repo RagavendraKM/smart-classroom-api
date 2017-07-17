@@ -415,6 +415,17 @@ module.exports = {
 	createAttendance: (req, res, next) => {
         log.info('Module - createAttendance Classrooms');
 
+		log.info('Initializing students list');
+		// assuming this is called directly after getting all of the students in the classroom.
+		// populate list with request
+		var students = res.locals;
+		var presencesInput = req.body.presences;
+		for (var ii = 0; ii < student.length; ii++) {
+			var student = students[ii];
+			presencesInput.push({'student': student, present: false});
+		}
+		req.body.presences = presencesInput;
+		
         var attendance = new models.attendances(req.body);
         ctrls.mongodb.findById(models.classrooms, req.params.id, (err, classroom) => {
             if (err) {

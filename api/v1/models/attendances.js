@@ -4,10 +4,10 @@ var presence = new mongoose.Schema({
     student: {
 		type: mongoose.Schema.Types.ObjectId,
         ref: 'Students',
-		present:{
-            type: Boolean,
-            default: false
-		}
+		},
+	present:{
+		type: Boolean,
+		default: false
     }
 
 }, {

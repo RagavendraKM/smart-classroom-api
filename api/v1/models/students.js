@@ -77,13 +77,17 @@ var goal = new mongoose.Schema({
 });
 
 var quiz = new mongoose.Schema({
-    questionNumber: {
-        type: Number,
-        required: [true, 'questionNumber is a required field!']
+    question: {
+        type: String,
+        required: [true, 'question is a required field!']
     },
     answer: {
         type: String,
         required: [true, 'answer is a required field!']
+    },
+    correct: {
+        type: Boolean,
+        default: false,
     }
 }, {
     _id: false
@@ -125,7 +129,7 @@ var schema = new mongoose.Schema({
         required: [true, 'lastName is a required field!'],
         validate: validate.alphaNumeric
     },
-    displayName:{
+    displayName: {
         type: String,
         default: 'Student',
         validate: validate.alphaNumeric

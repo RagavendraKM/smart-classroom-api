@@ -73,8 +73,14 @@ module.exports = (router) => {
         modules.students.deleteGoal,
         modules.response);
 
-    // TODO: POST /students/:id/quizzes
-    // TODO: POST /students/:id/quizzes/:quizId/results
-    // TODO: POST /students/:id/classrooms/:classroomId
-    // TODO: DELETE /students/:id/classrooms/:classroomId
+    log.info('Initializing Route POST /students/:id/quizzes/:quizId/results');
+    router.post('/students/:id/quizzes',
+        modules.verify.token,
+        modules.verify.params,
+        modules.verify.body,
+        modules.students.validatePathId,
+        modules.students.verifyId,
+        modules.students.validateQuizData,
+        modules.students.submitQuiz,
+        modules.response);
 };

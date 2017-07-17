@@ -63,6 +63,4 @@ module.exports = (router) => {
         modules.classrooms.validatePathId,
         modules.classrooms.getAllStudents,
         modules.response);
-
-    // TODO: Student Submit a quiz (POST /students/:id/quizzes/:quizId/results)
 };

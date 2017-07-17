@@ -432,5 +432,73 @@ module.exports = {
 
         log.info('Authorized');
         next();
+    },
+
+    /**
+     * Validates a quiz payload for a student
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    validateQuizData: (req, res, next) => {
+        log.info('Module - validateQuizData Student');
+
+        // Validate schema
+        log.info('Validating student quiz data...');
+        let fakeStudent = new models.students({
+            quizHistory: [req.body]
+        });
+
+        let student = new models.students(fakeStudent);
+        let error = student.validateSync();
+
+        if (error.errors['quizHistory']) {
+            log.error('Student quiz data validation failed!');
+            let err = new Error('Student Quiz Data Validation Failed!');
+            err.status = 400;
+            // Remove stack trace but retain detailed description of validation errors
+            err.data = JSON.parse(JSON.stringify(error.errors['quizHistory']));
+            next(err);
+            return;
+        }
+
+        log.info('Student quiz data has been validated!');
+        next();
+    },
+
+    /**
+     * Submits a quiz
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    submitQuiz: (req, res, next) => {
+        log.info('Module - submitQuiz Student');
+        ctrls.mongodb.findById(models.students, req.params.id, (err, result) => {
+            if (err) {
+                let err = new Error('Failed getting student!');
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found student [' + req.params.id + ']');
+
+            log.info('Submitting student quiz');
+            result.quizHistory.push(req.body);
+
+            ctrls.mongodb.save(result, (err, _result) => {
+                if (err) {
+                    let err = new Error('Failed submitting student quiz!');
+                    err.status = 500;
+                    next(err);
+                    return;
+                }
+
+                log.info('Successfully submitted quiz for student [' + req.params.id + ']');
+
+                res.locals = _result;
+                next();
+            });
+        });
     }
 };

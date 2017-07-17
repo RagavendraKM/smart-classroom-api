@@ -112,10 +112,13 @@ module.exports = {
                 return;
             }
 
+
             // return response as JWT
             res.locals = {
                 success: true,
-                token: token
+                token: token,
+                userType: req.body.userType,
+                id: user._id
             };
 
             next();

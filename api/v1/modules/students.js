@@ -503,5 +503,45 @@ module.exports = {
                 next();
             });
         });
+    },
+    /**
+     * Assigns goals to a list of students
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    createGoals: (req, res, next) => {
+        log.info('Module - createGoals Student');
+        for (let i = 0; i < req.body.students.length; i++) {
+            ctrls.mongodb.findById(models.students, req.body.students[i], (err, result) => {
+                if (err) {
+                    let err = new Error('Failed getting student!');
+                    err.status = 500;
+                    next(err);
+                    return;
+                }
+                log.info('Successfully found student [' + req.body.students[i] + ']');
+
+                log.info('Creating student goal');
+                result.goals.push(req.body.goal);
+
+                ctrls.mongodb.save(result, (err, _result) => {
+                    if (err) {
+                        let err = new Error('Failed creating student goal!');
+                        err.status = 500;
+                        next(err);
+                        return;
+                    }
+
+                    log.info('Successfully created goal for student [' + req.body.students[i] + ']');
+
+                });
+            });
+        }
+        res.locals = {
+            accepted: true
+        };
+        next();
+
     }
 };

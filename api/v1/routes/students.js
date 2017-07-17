@@ -40,6 +40,12 @@ module.exports = (router) => {
         modules.students.deleteOne,
         modules.response);
 
+    log.info('Initializing Route POST /students/goals');
+    router.post('/students/goals',
+        modules.verify.body,
+        modules.students.createGoals,
+        modules.response);
+
     log.info('Initializing Route POST /students/:id/goals');
     router.post('/students/:id/goals',
         modules.verify.token,

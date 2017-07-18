@@ -54,7 +54,8 @@ module.exports = {
                         return;
                     }
                     log.info('Successfully created teacher');
-                    res.locals = result;
+                    res.locals = JSON.parse(JSON.stringify(result));
+                    delete res.locals['password'];
                     next();
                 });
             });

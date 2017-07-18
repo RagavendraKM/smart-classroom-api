@@ -1,13 +1,21 @@
 const mongoose = require('mongoose');
 
+var getFormattedDate = () => {
+    var currentdate = new Date();
+    var datetime = currentdate.getDate() + '/' +
+        (currentdate.getMonth() + 1) + '/' +
+        currentdate.getFullYear();
+    return datetime;
+};
+
 var presence = new mongoose.Schema({
     student: {
-		type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Students',
-		},
-	present:{
-		type: Boolean,
-		default: false
+    },
+    present: {
+        type: Boolean,
+        default: false
     }
 
 }, {
@@ -17,14 +25,19 @@ var presence = new mongoose.Schema({
 var schema = new mongoose.Schema({
     title: {
         type: String,
-        required: true
+        default: 'Attendance for ' + getFormattedDate()
     },
-    createdDate: {
-        type: Date
+    date: {
+        type: Date,
+        default: Date.now
     },
     activated: {
         type: Boolean,
-        default: false
+        default: true
+    },
+    classroom: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Classrooms',
     },
     presences: {
         type: [presence],

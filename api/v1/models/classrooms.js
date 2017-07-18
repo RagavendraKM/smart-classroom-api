@@ -35,7 +35,7 @@ var schema = new mongoose.Schema({
         ref: 'Quizzes',
         default: []
     }],
-	attendanceHistory: [{
+    attendanceHistory: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Attendances',
         default: []

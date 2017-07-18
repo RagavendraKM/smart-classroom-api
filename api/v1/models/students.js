@@ -157,6 +157,11 @@ var schema = new mongoose.Schema({
         type: [quizHistory],
         default: []
     },
+    attendanceHistory: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Attendances',
+        default: []
+    }],
     goals: {
         type: [goal],
         default: []

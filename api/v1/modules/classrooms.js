@@ -350,37 +350,7 @@ module.exports = {
         });
     },
     /**
-     * Validates path attendanceId parameter
-     * @param  {object}   req  Request object
-     * @param  {object}   res  Response object
-     * @param  {Function} next Callback function to move on to the next middleware
-     */
-    validateAttendanceId: (req, res, next) => {
-        log.info('Module - validateAttendanceId Classrooms');
-
-        log.info('Validating request...');
-        if (!req.params.attendanceId) {
-            log.error('Request validation failed');
-            let err = new Error('Missing required attendance id parameter in the request path.');
-            err.status = 400;
-            next(err);
-            return;
-        }
-
-        if (!ctrls.mongodb.isObjectId(req.params.attendanceId)) {
-            log.error('Request validation failed');
-            let err = new Error('Invalid attendance id parameter in the request path.');
-            err.status = 400;
-            next(err);
-            return;
-        }
-
-        log.info('Attendance Id Request validated!');
-        next();
-    },
-
-    /**
-     * Validates schema before creating an attendance
+     * Validates schema before starting an attendance
      * @param  {object}   req  Request object
      * @param  {object}   res  Response object
      * @param  {Function} next Callback function to move on to the next middleware
@@ -389,9 +359,28 @@ module.exports = {
         log.info('Module - validateAttendanceCreation Classrooms');
 
         // Validate schema
-        log.info('Validating attendance model...')
-        var attendance = new models.attendances(req.body);
-        var error = attendance.validateSync();
+        log.info('Validating attendance model...');
+
+        // If empty no validation needed
+        if (!req.body || (Object.keys(req.body).length === 0 && req.body.constructor === Object)) {
+            log.info('Attendance model has been validated!');
+            next();
+            return;
+        }
+
+        let attendance;
+        let error;
+        try {
+            attendance = new models.attendance(req.body);
+            error = attendance.validateSync();
+        } catch (error) {
+            log.error('Attendance validation Failed!');
+            log.info(req.body)
+            let err = new Error('Attendance Validation Failed!');
+            err.status = 500;
+            next(err);
+            return;
+        }
 
         if (error) {
             log.error('Attendance model validation failed!');
@@ -406,27 +395,20 @@ module.exports = {
         log.info('Attendance model has been validated!');
         next();
     },
-	/**
+    /**
      * Creates an Attendance
      * @param  {object}   req  Request object
      * @param  {object}   res  Response object
      * @param  {Function} next Callback function to move on to the next middleware
      */
-	createAttendance: (req, res, next) => {
+    createAttendance: (req, res, next) => {
         log.info('Module - createAttendance Classrooms');
 
-		log.info('Initializing students list');
-		// assuming this is called directly after getting all of the students in the classroom.
-		// populate list with request
-		var students = res.locals;
-		var presencesInput = req.body.presences;
-		for (var ii = 0; ii < student.length; ii++) {
-			var student = students[ii];
-			presencesInput.push({'student': student, present: false});
-		}
-		req.body.presences = presencesInput;
-		
-        var attendance = new models.attendances(req.body);
+        var attendance = (!req.body || (Object.keys(req.body).length === 0 && req.body.constructor === Object)) ?
+            new models.attendances({
+                classroom: req.params.id
+            }) : new models.attendances(req.body);
+
         ctrls.mongodb.findById(models.classrooms, req.params.id, (err, classroom) => {
             if (err) {
                 let err = new Error('Failed getting classroom: ' + req.params.id);
@@ -436,7 +418,7 @@ module.exports = {
             }
             log.info('Successfully found classroom [' + req.params.id + ']');
 
-            log.info('Creating Attendance for classroom [' + req.params.id + ']');
+            log.info('Creating attendance for classroom [' + req.params.id + ']');
             ctrls.mongodb.save(attendance, (err, result) => {
                 if (err) {
                     let err = new Error('Error creating attendance for classroom [' + req.params.id + ']');
@@ -465,7 +447,71 @@ module.exports = {
             });
         });
     },
-	 /**
+    /**
+     * Stops attendance
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    stopAttendance: (req, res, next) => {
+        log.info('Module - stopAttendance Classrooms');
+
+        ctrls.mongodb.findById(models.attendances, req.params.attendanceId, (err, attendance) => {
+            if (err) {
+                let err = new Error('Failed getting attendance: ' + req.params.attendanceId);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found attendance [' + req.params.attendanceId + ']');
+            attendance.activated = false;
+            res.locals = attendance;
+            ctrls.mongodb.save(attendance, (err, _result) => {
+                if (err) {
+                    let err = new Error('Failed stoping attendance!');
+                    err.status = 500;
+                    next(err);
+                    return;
+                }
+
+                log.info('Succesfully stopped attendance [' + req.params.attendanceId + ']');
+                next();
+            });
+        });
+    },
+    /**
+     * Start attendance
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    startAttendance: (req, res, next) => {
+        log.info('Module - startAttendance Classrooms');
+
+        ctrls.mongodb.findById(models.attendances, req.params.attendanceId, (err, attendance) => {
+            if (err) {
+                let err = new Error('Failed getting attendance: ' + req.params.attendanceId);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found attendance [' + req.params.attendanceId + ']');
+            attendance.activated = true;
+            res.locals = attendance;
+            ctrls.mongodb.save(attendance, (err, _result) => {
+                if (err) {
+                    let err = new Error('Failed starting attendance!');
+                    err.status = 500;
+                    next(err);
+                    return;
+                }
+
+                log.info('Succesfully started attendance [' + req.params.attendanceId + ']');
+                next();
+            });
+        });
+    },
+    /**
      * Gets all classroom attendances
      * @param  {object}   req  Request object
      * @param  {object}   res  Response object
@@ -485,36 +531,6 @@ module.exports = {
             }
             log.info('Successfully found classroom [' + req.params.id + ']');
             res.locals = classroom.attendanceHistory;
-            next();
-        });
-    },
-    /**
-     * Gets all active classroom attendances
-     * @param  {object}   req  Request object
-     * @param  {object}   res  Response object
-     * @param  {Function} next Callback function to move on to the next middleware
-     */
-    getAllActiveAttendances: (req, res, next) => {
-        log.info('Module - getAllAttendances Classrooms');
-        let populators = [{
-            path: 'attendanceHistory'
-        }];
-        ctrls.mongodb.findByIdAndPopulate(models.classrooms, req.params.id, populators, (err, classroom) => {
-            if (err) {
-                let err = new Error('Failed getting classroom: ' + req.params.id);
-                err.status = 500;
-                next(err);
-                return;
-            }
-            log.info('Successfully found classroom [' + req.params.id + ']');
-            log.info('Filtering out non activated attendances');
-            let attendances = [];
-            for (let i = 0; i < classroom.attendanceHistory.length; i++) {
-                if (classroom.attendanceHistory[i].activated) {
-                    attendances.push(classroom.attendanceHistory[i]);
-                }
-            }
-            res.locals = attendances;
             next();
         });
     },
@@ -541,7 +557,90 @@ module.exports = {
             next();
         });
     },
+    /**
+     * Marks a student as present in the classroom for the active attendance
+     * @param  {object}   req  Request object
+     * @param  {object}   res  Response object
+     * @param  {Function} next Callback function to move on to the next middleware
+     */
+    studentSignIn: (req, res, next) => {
+        log.info('Module - studentSignIn Classrooms');
+        let populators = [{
+            path: 'attendanceHistory'
+        }];
+        ctrls.mongodb.findByIdAndPopulate(models.classrooms, req.params.id, populators, (err, classroom) => {
+            if (err) {
+                let err = new Error('Failed getting classroom: ' + req.params.id);
+                err.status = 500;
+                next(err);
+                return;
+            }
+            log.info('Successfully found classroom [' + req.params.id + ']');
+            //Find first active attendance
+            let attendanceId;
+            for (let i = 0; i < classroom.attendanceHistory.length; i++) {
+                let attendance = classroom.attendanceHistory[i];
+                // TODO: make sure date is today
+                if (attendance.activated) {
+                    // This is annoying but Mongoosse doesn't support the saving of populated doc
+                    attendanceId = attendance._id;
+                    break;
+                }
+            }
 
+            if (!attendanceId) {
+                let err = new Error('No active attendances for this classroom!');
+                err.status = 404;
+                next(err);
+                return;
+            }
+
+            ctrls.mongodb.findById(models.attendances, attendanceId, (err, attendance) => {
+                if (err) {
+                    log.error('Failed getting attendace: [' + attendanceId + ']');
+                    log.error('Failed sign in for student [' + req.params.studentId + ']');
+                    return;
+                }
+                attendance.presences.push({
+                    student: req.params.studentId,
+                    present: true
+                });
+                ctrls.mongodb.save(attendance, (err, _result) => {
+                    if (err) {
+                        log.error('Failed getting attendace: [' + attendanceId + ']');
+                        log.error('Failed sign in for student [' + req.params.studentId + ']');
+                        return;
+                    }
+
+                    log.info('Student [' + req.params.studentId + '] has signed into to classroom [' + req.params.id + '] on attendance [' + attendanceId + ']');
+                });
+            });
+
+            ctrls.mongodb.findById(models.students, req.params.studentId, (err, student) => {
+                if (err) {
+                    log.error('Failed getting student: [' + req.params.studentId + ']');
+                    log.error('Failed sign in for student [' + req.params.studentId + ']');
+                    return;
+                }
+                student.attendanceHistory.push(attendanceId);
+                log.info('Student [' + req.params.studentId + '] attendance has been updated [' + attendanceId + ']');
+                ctrls.mongodb.save(student, (err, _result) => {
+                    if (err) {
+                        log.error('Failed getting student: [' + req.params.studentId + ']');
+                        log.error('Failed sign in for student [' + req.params.studentId + ']');
+                        return;
+                    }
+
+                    log.info('Student [' + req.params.studentId + '] attendance has been updated [' + attendanceId + ']');
+                });
+            });
+
+            res.locals = {
+                accepted: true
+            };
+            next();
+        });
+    },
     /**
      * Verifies teacher identity based on JWT
      * @param  {object}   req  Request object

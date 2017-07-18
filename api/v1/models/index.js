@@ -4,6 +4,5 @@ module.exports = {
     quizzes: require('./quizzes'),
     teachers: require('./teachers'),
     classrooms: require('./classrooms'),
-	attendances: require('./attendances'),
-	
+    attendances: require('./attendances')
 };

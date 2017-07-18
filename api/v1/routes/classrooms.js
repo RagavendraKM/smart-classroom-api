@@ -68,20 +68,43 @@ module.exports = (router) => {
         modules.classrooms.verifyTeacherOrStudent,
         modules.classrooms.getAllActiveQuizzes,
         modules.response);
-		
-	log.info('Initializing Route POST /classrooms/:id/attendances');
+
+    // Starts and creates an attendance
+    log.info('Initializing Route POST /classrooms/:id/attendances');
     router.post('/classrooms/:id/attendances',
         modules.verify.token,
-        modules.verify.body,
         modules.verify.params,
         modules.classrooms.validatePathId,
         modules.classrooms.verifyTeacher,
         modules.classrooms.validateAttendanceCreation,
-		modules.classrooms.getAllStudents,
         modules.classrooms.createAttendance,
         modules.response);
-	
-	log.info('Initializing Route GET /classrooms/:id/attendances');
+
+    // Stops an attendance
+    log.info('Initializing Route POST /classrooms/:id/attendances/:attendanceId/stop');
+    router.post('/classrooms/:id/attendances/:attendanceId/stop',
+        modules.verify.token,
+        modules.verify.params,
+        modules.classrooms.validatePathId,
+        //modules.classrooms.validateAttendanceId,
+        // TODO: validate attendance id
+        modules.classrooms.verifyTeacher,
+        modules.classrooms.stopAttendance,
+        modules.response);
+
+    // Starts an attendance
+    log.info('Initializing Route POST /classrooms/:id/attendances/:attendanceId/start');
+    router.post('/classrooms/:id/attendances/:attendanceId/start',
+        modules.verify.token,
+        modules.verify.params,
+        modules.classrooms.validatePathId,
+        //modules.classrooms.validateAttendanceId,
+        // TODO: validate attendance id
+        modules.classrooms.verifyTeacher,
+        modules.classrooms.startAttendance,
+        modules.response);
+
+    log.info('Initializing Route GET /classrooms/:id/attendances');
     router.get('/classrooms/:id/attendances',
         modules.verify.token,
         modules.verify.params,
@@ -90,15 +113,15 @@ module.exports = (router) => {
         modules.classrooms.getAllAttendances,
         modules.response);
 
-    log.info('Initializing Route GET /classrooms/:id/attendances/activated');
-    router.get('/classrooms/:id/attendances/activated',
+    log.info('Initializing Route GET /classrooms/:id/students/:studentId/signIn');
+    router.post('/classrooms/:id/students/:studentId/signIn',
         modules.verify.token,
         modules.verify.params,
         modules.classrooms.validatePathId,
-        modules.classrooms.verifyTeacherOrStudent,
-        modules.classrooms.getAllActiveAttendances,
+        //TODO: verify and validate Student Id
+        modules.classrooms.studentSignIn,
         modules.response);
-		
+
     log.info('Initializing Route GET /classrooms/:id/students');
     router.get('/classrooms/:id/students',
         modules.verify.token,

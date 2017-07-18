@@ -553,7 +553,11 @@ module.exports = {
     getAllStudents: (req, res, next) => {
         log.info('Module - getAllStudents Classrooms');
         let populators = [{
-            path: 'students'
+            path: 'students',
+            populate: {
+                path: 'classrooms',
+                model: 'Classrooms'
+            }
         }];
         ctrls.mongodb.findByIdAndPopulate(models.classrooms, req.params.id, populators, (err, classroom) => {
             if (err) {

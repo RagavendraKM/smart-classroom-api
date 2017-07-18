@@ -516,26 +516,20 @@ module.exports = {
         for (let i = 0; i < req.body.students.length; i++) {
             ctrls.mongodb.findById(models.students, req.body.students[i], (err, result) => {
                 if (err) {
-                    let err = new Error('Failed getting student!');
-                    err.status = 500;
-                    next(err);
+                    log.error('Failed creating goal for student');
                     return;
                 }
-                log.info('Successfully found student [' + req.body.students[i] + ']');
+                log.info('Successfully found student [' + result._id + ']');
 
                 log.info('Creating student goal');
                 result.goals.push(req.body.goal);
 
                 ctrls.mongodb.save(result, (err, _result) => {
                     if (err) {
-                        let err = new Error('Failed creating student goal!');
-                        err.status = 500;
-                        next(err);
+                        log.error('Failed creating goal for student [' + result._id + ']');
                         return;
                     }
-
-                    log.info('Successfully created goal for student [' + req.body.students[i] + ']');
-
+                    log.info('Successfully created goal for student [' + result._id + ']');
                 });
             });
         }
@@ -543,6 +537,5 @@ module.exports = {
             accepted: true
         };
         next();
-
     }
 };

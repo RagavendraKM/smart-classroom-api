@@ -455,8 +455,11 @@ module.exports = {
      */
     stopAttendance: (req, res, next) => {
         log.info('Module - stopAttendance Classrooms');
-
-        ctrls.mongodb.findById(models.attendances, req.params.attendanceId, (err, attendance) => {
+        let populators = [{
+            path: 'presences.student',
+            model: 'Students'
+        }];
+        ctrls.mongodb.findByIdAndPopulate(models.attendances, req.params.attendanceId, populators, (err, attendance) => {
             if (err) {
                 let err = new Error('Failed getting attendance: ' + req.params.attendanceId);
                 err.status = 500;
@@ -487,8 +490,11 @@ module.exports = {
      */
     startAttendance: (req, res, next) => {
         log.info('Module - startAttendance Classrooms');
-
-        ctrls.mongodb.findById(models.attendances, req.params.attendanceId, (err, attendance) => {
+        let populators = [{
+            path: 'presences.student',
+            model: 'Students'
+        }];
+        ctrls.mongodb.findByIdAndPopulate(models.attendances, req.params.attendanceId, populators, (err, attendance) => {
             if (err) {
                 let err = new Error('Failed getting attendance: ' + req.params.attendanceId);
                 err.status = 500;
@@ -520,7 +526,11 @@ module.exports = {
     getAllAttendances: (req, res, next) => {
         log.info('Module - getAllAttendances Classrooms');
         let populators = [{
-            path: 'attendanceHistory'
+            path: 'attendanceHistory',
+            populate: {
+                path: 'presences.student',
+                model: 'Students'
+            }
         }];
         ctrls.mongodb.findByIdAndPopulate(models.classrooms, req.params.id, populators, (err, classroom) => {
             if (err) {

@@ -3,5 +3,7 @@ module.exports = {
     goals: require('./goals'),
     quizzes: require('./quizzes'),
     teachers: require('./teachers'),
-    classrooms: require('./classrooms')
+    classrooms: require('./classrooms'),
+	attendances: require('./attendances'),
+	
 };

@@ -10,6 +10,7 @@ module.exports = (router) => {
     require('./goals')(router);
     require('./quizzes')(router);
     require('./classrooms')(router);
+	require('./attendances')(router);
     require('./authenticate')(router);
 
     // Error middleware must remain at end

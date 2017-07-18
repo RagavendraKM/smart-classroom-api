@@ -68,7 +68,37 @@ module.exports = (router) => {
         modules.classrooms.verifyTeacherOrStudent,
         modules.classrooms.getAllActiveQuizzes,
         modules.response);
+		
+	log.info('Initializing Route POST /classrooms/:id/attendances');
+    router.post('/classrooms/:id/attendances',
+        modules.verify.token,
+        modules.verify.body,
+        modules.verify.params,
+        modules.classrooms.validatePathId,
+        modules.classrooms.verifyTeacher,
+        modules.classrooms.validateAttendanceCreation,
+		modules.classrooms.getAllStudents,
+        modules.classrooms.createAttendance,
+        modules.response);
+	
+	log.info('Initializing Route GET /classrooms/:id/attendances');
+    router.get('/classrooms/:id/attendances',
+        modules.verify.token,
+        modules.verify.params,
+        modules.classrooms.validatePathId,
+        modules.classrooms.verifyTeacherOrStudent,
+        modules.classrooms.getAllAttendances,
+        modules.response);
 
+    log.info('Initializing Route GET /classrooms/:id/attendances/activated');
+    router.get('/classrooms/:id/attendances/activated',
+        modules.verify.token,
+        modules.verify.params,
+        modules.classrooms.validatePathId,
+        modules.classrooms.verifyTeacherOrStudent,
+        modules.classrooms.getAllActiveAttendances,
+        modules.response);
+		
     log.info('Initializing Route GET /classrooms/:id/students');
     router.get('/classrooms/:id/students',
         modules.verify.token,

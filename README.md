@@ -85,4 +85,4 @@ Each route is composed of modules, as shown in Figure 5. Modules correspond dire
 Controllers, in the context of this API, correspond to a dedicated interaction with a domain specific extension. Controllers can be structured in any format but typically are simply a set of functions, available to the Module, that interact with their corresponding domain specific extension. For this backend, the only domain specific extension is the MongoDB database, which in turn corresponds to the API having a database controller to encapsulate the interactions. Designing the API in this way allows for adaptability of new technologies and features with minimal effort.
 
 
-![Smart Classroom REST API](https://raw.githubusercontent.com/maxcarter/smart-classroom-api/master/assets/architecture.png)
+![Smart Classroom REST API](https://raw.github.com/maxcarter/smart-classroom-api/master/assets/architecture.png)

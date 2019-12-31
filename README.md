@@ -2,6 +2,7 @@
 
 This repository is the backend REST API for the [Smart Classroom](https://github.com/peterpogorski/smartclassandroid) mobile application.
 
+[![Run on Repl.it](https://repl.it/badge/github/RagavendraKM/smart-classroom-api)](https://repl.it/github/RagavendraKM/smart-classroom-api)
 
 Smart Classroom improves classroom interactions between students and teachers by transitioning mobile devices from a distraction to an educational asset. Smart Classroom optimizes class time by significantly reducing the amount of time required for students and teachers to coordinate classroom participation. This refers to tedious tasks such as manually prompting individual students for attendance, physically handing out quizzes during the lecture, and having to weeks just to see simple quiz results.
 
